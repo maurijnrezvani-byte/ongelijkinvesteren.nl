@@ -1,0 +1,86 @@
+---
+// Aanbod: de ladder van quickscan naar investeringsscan naar monitor. Kleurstelling Blauw (vraag 2).
+// De tekst komt uit src/content/paginas/aanbod.md; elke tussenkop (##) wordt een rij.
+import { getEntry } from 'astro:content';
+import Basis from '../layouts/Basis.astro';
+import KaartSymbolen from '../components/KaartSymbolen.astro';
+import Hero from '../components/Hero.astro';
+import Afsluiter from '../components/Afsluiter.astro';
+import { secties, blokken, metPunt } from '../lib/secties';
+
+const pagina = await getEntry('paginas', 'aanbod');
+if (!pagina) throw new Error('src/content/paginas/aanbod.md ontbreekt');
+const { titel, beschrijving, kop, intro, knop } = pagina.data;
+const { lijst } = secties(pagina.rendered?.html);
+// De twee producten waarmee een gemeente begint, krijgen een eigen link naar het formulier.
+const product = (id: string) => (id.startsWith('de-quickscan') ? 'quickscan' : id.startsWith('de-investeringsscan') ? 'investeringsscan' : '');
+---
+
+<Basis titel={titel} beschrijving={beschrijving} thema="blauw" kopOverVlak>
+  <KaartSymbolen />
+  <Hero kop={kop} intro={intro} thema="blauw" maat="display" />
+
+  <div class="kader sectie rijen">
+    {
+      lijst.map((s) => {
+        const b = blokken(s.html);
+        return (
+          <section class="rij" id={product(s.id) || undefined} aria-labelledby={s.id}>
+            <h2 id={s.id}>{metPunt(s.kop)}</h2>
+            <div>
+              <div class="inhoud" set:html={b.vooraf} />
+              {b.lijst.length > 0 && (
+                <div class="paneel onderdelen">
+                  {b.lijst.map((o) => (
+                    <div>
+                      <h3 class="label">{o.kop}</h3>
+                      <div class="inhoud" set:html={o.html} />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {product(s.id) && knop && (
+                <p class="actieregel">
+                  <a class="verder" href={knop.link}>
+                    {knop.tekst}
+                    <span class="verborgen">: de {product(s.id)}</span>
+                  </a>
+                </p>
+              )}
+            </div>
+          </section>
+        );
+      })
+    }
+  </div>
+
+  <Afsluiter tekst="Een halfuur meedenken over de vraag of dit iets voor je gemeente is, kost niets." knop={knop} />
+</Basis>
+
+<style>
+  .onderdelen {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  .onderdelen h3 {
+    color: var(--inkt-zacht);
+    margin-bottom: var(--space-2);
+  }
+
+  .onderdelen :global(.inhoud) {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 62rem) {
+    .onderdelen {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .onderdelen > div:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

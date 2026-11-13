@@ -1,0 +1,30 @@
+---
+// Een klein stukje van de kaart in een eigen kleurstelling, zoals boven de drie vragen.
+// De enige plek waar het vlak als los beeld bij tekst staat.
+import Vlak from './Vlak.astro';
+
+interface Props {
+  thema: 'rood' | 'blauw' | 'groen';
+}
+
+const { thema } = Astro.props;
+const UITSNEDE = {
+  rood: [0.62, 0, 0, 0.62, -146.2, -73],
+  blauw: [0.7417, 0.2997, -0.2997, 0.7417, -156.1, -277.6],
+  groen: [-0.66, 0, 0, -0.66, 614.5, 284.5],
+} as const;
+---
+
+<div class="stuk" data-theme={thema}>
+  <Vlak kader={[365, 210]} matrix={[...UITSNEDE[thema]]} vaag={18} haar={0.5} />
+</div>
+
+<style>
+  .stuk {
+    position: relative;
+    aspect-ratio: 365 / 210;
+    overflow: hidden;
+    background: var(--papier);
+    border-radius: var(--radius-sm);
+  }
+</style>

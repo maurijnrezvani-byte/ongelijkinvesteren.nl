@@ -1,0 +1,61 @@
+---
+// De vier vragen als treden: elke volgende vraag staat een stap hoger (breed) of steekt
+// verder uit (telefoon). Rustige vlakken, geen kaders.
+interface Props {
+  /** de vragen als HTML, in volgorde */
+  vragen: string[];
+}
+
+const { vragen } = Astro.props;
+---
+
+<ol class="treden">
+  {
+    vragen.map((v, i) => (
+      <li style={`--trede:${i}`}>
+        <p class="cijfer rood">Vraag {i + 1}</p>
+        <p class="vraag" set:html={v} />
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .treden {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  li {
+    background: var(--vlak);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    width: calc(70% + var(--trede) * 10%);
+  }
+
+  .vraag {
+    margin-top: var(--space-2);
+    font-family: var(--font-kop);
+    font-weight: var(--gewicht-kop);
+    font-size: var(--intro-maat);
+    line-height: var(--kop-3-regel);
+    letter-spacing: var(--kop-3-spatie);
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 48rem) {
+    .treden {
+      grid-template-columns: repeat(4, 1fr);
+      align-items: end;
+    }
+
+    li {
+      width: auto;
+      min-height: calc(190px + var(--trede) * 64px);
+      padding: var(--space-6);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+  }
+</style>

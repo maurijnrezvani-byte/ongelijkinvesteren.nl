@@ -1,0 +1,210 @@
+---
+import { site } from '../site.config';
+import Beeldmerk from './Beeldmerk.astro';
+
+interface Props {
+  /** true = de kop ligt doorzichtig over het vlak van de hero (homepage) */
+  overVlak?: boolean;
+}
+
+const { overVlak = false } = Astro.props;
+const pad = Astro.url.pathname;
+const isActief = (link: string) => pad === link || pad.startsWith(link);
+---
+
+<header class:list={['kop', { 'over-vlak': overVlak }]}>
+  <div class="kader kop-binnen">
+    <a class="woordmerk" href="/" aria-current={pad === '/' ? 'page' : undefined}>
+      <Beeldmerk stand={1} hoogte={28} />
+      <span>{site.naam}</span>
+    </a>
+    <button class="knop rand klein menuknop" type="button" aria-expanded="false" aria-controls="hoofdmenu" hidden>Menu</button>
+    <nav id="hoofdmenu" class="nav" aria-label="Hoofdmenu">
+      <ul class="menu">
+        {
+          site.menu.map((item) => {
+            const knop = 'knop' in item && item.knop;
+            return (
+              <li class={knop ? 'rechts' : undefined}>
+                <a
+                  href={item.link}
+                  class={knop ? 'knop rand klein' : undefined}
+                  aria-current={isActief(item.link) ? 'page' : undefined}
+                >
+                  {item.tekst}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  // Op smalle schermen klapt het menu in achter de knop Menu. Zonder JavaScript blijft het menu gewoon zichtbaar.
+  (function () {
+    var kop = document.querySelector('.kop');
+    if (!kop) return;
+    var knop = kop.querySelector('.menuknop');
+    kop.classList.add('js');
+    knop.hidden = false;
+    function zet(open) {
+      kop.classList.toggle('open', open);
+      knop.setAttribute('aria-expanded', open ? 'true' : 'false');
+      knop.textContent = open ? 'Sluiten' : 'Menu';
+    }
+    knop.addEventListener('click', function () { zet(!kop.classList.contains('open')); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && kop.classList.contains('open')) { zet(false); knop.focus(); }
+    });
+  })();
+</script>
+
+<style>
+  .kop {
+    position: relative;
+    z-index: 3;
+    background: var(--papier);
+  }
+
+  .kop.over-vlak {
+    position: absolute;
+    inset: 0 0 auto 0;
+    background: transparent;
+  }
+
+  .kop-binnen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) 26px;
+    padding-block: 18px;
+  }
+
+  .woordmerk {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-right: auto;
+    font-family: var(--font-kop);
+    font-weight: var(--gewicht-kop);
+    font-size: var(--woordmerk-maat);
+    letter-spacing: var(--woordmerk-spatie);
+    line-height: 1;
+    color: var(--inkt);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .woordmerk :global(.merk) {
+    height: 23px;
+    width: auto;
+  }
+
+  .nav {
+    flex: 1 1 100%;
+  }
+
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) 26px;
+    list-style: none;
+    padding: 0;
+    font-family: var(--font-kop);
+    font-size: var(--knop-maat);
+    line-height: var(--knop-regel);
+    font-weight: var(--gewicht-kop);
+  }
+
+  .menu a:not(.knop) {
+    display: inline-block;
+    padding-block: 9px;
+    color: var(--inkt);
+    text-decoration: none;
+  }
+
+  .menu a:not(.knop):hover,
+  .menu a:not(.knop)[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  .menuknop[hidden] {
+    display: none;
+  }
+
+  /* Smal scherm met JavaScript: het menu zit achter de knop. */
+  @media (max-width: 61.99rem) {
+    .kop.js .nav {
+      display: none;
+    }
+
+    .kop.js.open .nav {
+      display: block;
+      position: absolute;
+      inset: 100% 0 auto 0;
+      background: var(--papier);
+      border-bottom: 1px solid var(--lijn);
+      padding: var(--space-2) var(--rand) var(--space-6);
+    }
+
+    .kop.js.open {
+      background: var(--papier);
+    }
+
+    .kop.js .menu {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      font-size: 1.375rem;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    .kop.js .menu a:not(.knop) {
+      padding-block: 10px;
+    }
+
+    .kop.js .menu .rechts {
+      margin-top: var(--space-4);
+    }
+  }
+
+  /* Breed scherm: woordmerk en navigatie links naast elkaar, alleen Contact rechts. */
+  @media (min-width: 62rem) {
+    .kop-binnen {
+      flex-wrap: nowrap;
+      padding-block: 26px;
+    }
+
+    .woordmerk {
+      gap: 10px;
+      margin-right: 18px;
+    }
+
+    .woordmerk :global(.merk) {
+      height: 28px;
+    }
+
+    .nav {
+      flex: 1 1 auto;
+    }
+
+    .menu {
+      flex-wrap: nowrap;
+    }
+
+    .menu .rechts {
+      margin-left: auto;
+    }
+
+    .menuknop {
+      display: none;
+    }
+  }
+</style>

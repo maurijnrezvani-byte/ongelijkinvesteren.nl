@@ -1,0 +1,202 @@
+---
+// Methode: opgave, inzet en match, de OI-index met een rekenvoorbeeld, en vijf manieren om
+// ongelijk te investeren. Kleurstelling Groen (vraag 3, hoe kan het eerlijker?).
+// De tekst komt uit src/content/paginas/methode.md. Elke tussenkop (##) wordt een sectie;
+// de vorm volgt uit de inhoud, zodat volgorde en tekst in de Markdown blijven:
+// - alinea's die met een vetgedrukt kopje beginnen, worden kolommen met een stukje kaart;
+// - de sectie over de OI-index krijgt het rekenvoorbeeld als figuur, met de getallen uit de tekst;
+// - een genummerde lijst met vetgedrukte kopjes wordt een genummerde lijst met kopjes;
+// - al het andere wordt een rij (kop links, tekst rechts).
+import { getEntry } from 'astro:content';
+import Basis from '../layouts/Basis.astro';
+import KaartSymbolen from '../components/KaartSymbolen.astro';
+import Hero from '../components/Hero.astro';
+import Stuk from '../components/Stuk.astro';
+import Afsluiter from '../components/Afsluiter.astro';
+import MethodeRekensom from '../components/MethodeRekensom.astro';
+import { secties, metPunt, type Sectie } from '../lib/secties';
+
+const pagina = await getEntry('paginas', 'methode');
+if (!pagina) throw new Error('src/content/paginas/methode.md ontbreekt');
+const { titel, beschrijving, kop, intro, knop } = pagina.data;
+const { lijst } = secties(pagina.rendered?.html);
+const themas = ['rood', 'blauw', 'groen'] as const;
+
+const stappen = (html: string) => {
+  if (/<ol>/.test(html)) return null;
+  const lijst = [...html.matchAll(/<p>\s*<strong>([^<]+)<\/strong>\s*([\s\S]*?)<\/p>/g)].map((m) => ({ kop: m[1].trim(), html: m[2].trim() }));
+  return lijst.length > 1 ? lijst : null;
+};
+
+// Het rekenvoorbeeld: de eerste twee percentages na "verzonnen voorbeeld" zijn opgave en inzet.
+const rekensom = (s: Sectie) => {
+  if (!s.id.includes('index')) return null;
+  const alineas = s.html.split(/(?<=<\/p>)\s*/).filter(Boolean);
+  const plek = alineas.findIndex((a) => /verzonnen voorbeeld/i.test(a));
+  if (plek < 0) return null;
+  const getallen = [...alineas[plek].matchAll(/(\d+(?:,\d+)?)\s*(?:procent|%)/g)].map((m) => Number(m[1].replace(',', '.')));
+  if (getallen.length < 2 || !getallen[0]) return null;
+  return { voor: alineas.slice(0, plek + 1).join(''), na: alineas.slice(plek + 1).join(''), opgave: getallen[0], inzet: getallen[1] };
+};
+
+const manieren = (html: string) => {
+  const ol = html.match(/<ol>([\s\S]*?)<\/ol>/);
+  if (!ol) return null;
+  const lijst = [...ol[1].matchAll(/<li>\s*<strong>([^<]+)<\/strong>\s*([\s\S]*?)<\/li>/g)].map((m) => ({ kop: m[1].trim(), html: m[2].trim() }));
+  return lijst.length > 1 ? { lijst, rest: html.replace(ol[0], '').trim() } : null;
+};
+
+type Blok =
+  | { soort: 'rij'; s: Sectie }
+  | { soort: 'stappen'; s: Sectie; lijst: { kop: string; html: string }[] }
+  | { soort: 'rekensom'; s: Sectie; voor: string; na: string; opgave: number; inzet: number }
+  | { soort: 'manieren'; s: Sectie; lijst: { kop: string; html: string }[]; rest: string };
+
+const indeling: Blok[] = lijst.map((s) => {
+  const st = stappen(s.html);
+  if (st) return { soort: 'stappen', s, lijst: st };
+  const r = rekensom(s);
+  if (r) return { soort: 'rekensom', s, ...r };
+  const m = manieren(s.html);
+  if (m) return { soort: 'manieren', s, ...m };
+  return { soort: 'rij', s };
+});
+---
+
+<Basis titel={titel} beschrijving={beschrijving} thema="groen" kopOverVlak>
+  <KaartSymbolen />
+  <Hero kop={metPunt(kop)} intro={intro} thema="groen" maat="display" />
+
+  <div class="kader sectie rijen">
+    {
+      indeling.map((b) => {
+        if (b.soort === 'stappen')
+          return (
+            <section class="rij breed" aria-labelledby={b.s.id}>
+              <h2 id={b.s.id}>{metPunt(b.s.kop)}</h2>
+              <ol class="stappen kolommen">
+                {b.lijst.map((st, i) => (
+                  <li>
+                    <Stuk thema={themas[i % 3]} />
+                    <p class="cijfer rood nummer">{i + 1}</p>
+                    <h3>{metPunt(st.kop)}</h3>
+                    <div class="uitleg" set:html={st.html} />
+                  </li>
+                ))}
+              </ol>
+            </section>
+          );
+        if (b.soort === 'rekensom')
+          return (
+            <section class="rij" aria-labelledby={b.s.id}>
+              <h2 id={b.s.id}>{metPunt(b.s.kop)}</h2>
+              <div>
+                <div class="inhoud" set:html={b.voor} />
+                <MethodeRekensom opgave={b.opgave} inzet={b.inzet} />
+                {b.na && <div class="inhoud" set:html={b.na} />}
+              </div>
+            </section>
+          );
+        if (b.soort === 'manieren')
+          return (
+            <section class="rij" aria-labelledby={b.s.id}>
+              <h2 id={b.s.id}>{metPunt(b.s.kop)}</h2>
+              <div>
+                <ol class="manieren">
+                  {b.lijst.map((m, i) => (
+                    <li>
+                      <p class="cijfer rood" aria-hidden="true">{i + 1}</p>
+                      <div>
+                        <h3>{metPunt(m.kop)}</h3>
+                        <div class="inhoud" set:html={m.html} />
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                {b.rest && <div class="inhoud" set:html={b.rest} />}
+              </div>
+            </section>
+          );
+        return (
+          <section class="rij" aria-labelledby={b.s.id}>
+            <h2 id={b.s.id}>{metPunt(b.s.kop)}</h2>
+            <div class="inhoud" set:html={b.s.html} />
+          </section>
+        );
+      })
+    }
+  </div>
+
+  <Afsluiter tekst="Een halfuur meedenken over de vraag of dit iets voor je gemeente is, kost niets." knop={knop} />
+</Basis>
+
+<style>
+  /* Telefoon: in Groen ligt het label bij de kern op de hoogte van een kop van drie regels.
+
+  /* Een rij die de hele breedte gebruikt: de kop erboven, de drie stappen eronder. */
+  .rij.breed {
+    grid-template-columns: 1fr;
+  }
+
+  .stappen {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-6);
+  }
+
+  .nummer {
+    margin-top: 20px;
+  }
+
+  .stappen h3 {
+    margin-top: var(--space-1);
+  }
+
+  .uitleg {
+    margin-top: 14px;
+    max-width: var(--leesbreedte);
+  }
+
+  .manieren {
+    list-style: none;
+    padding: 0;
+  }
+
+  .manieren li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--lijn);
+  }
+
+  .manieren li:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .manieren .cijfer {
+    font-size: var(--kop-3-maat);
+    line-height: var(--kop-3-regel);
+  }
+
+  .manieren h3 {
+    font-size: var(--intro-maat);
+    line-height: var(--kop-3-regel);
+    letter-spacing: var(--kop-3-spatie);
+  }
+
+  .manieren .inhoud {
+    margin-top: var(--space-2);
+  }
+
+  .manieren + .inhoud {
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .stappen {
+      margin-top: var(--space-6);
+    }
+  }
+</style>

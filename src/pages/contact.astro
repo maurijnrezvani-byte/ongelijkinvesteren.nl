@@ -1,0 +1,165 @@
+---
+// Contact: het formulier met aanvinkvakjes (Tally) en daarnaast de directe weg.
+// De tekst komt uit src/content/paginas/contact.md.
+import { getEntry } from 'astro:content';
+import Basis from '../layouts/Basis.astro';
+import { secties, metPunt } from '../lib/secties';
+import { site, ingevuld } from '../site.config';
+
+const pagina = await getEntry('paginas', 'contact');
+if (!pagina) throw new Error('src/content/paginas/contact.md ontbreekt');
+const { titel, beschrijving, kop, intro } = pagina.data;
+const { lijst } = secties(pagina.rendered?.html);
+const formulier = `https://tally.so/embed/${site.tallyId}?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1`;
+// Dezelfde vakjes als in het formulier, voor wie het formulier niet kan laden.
+const vakjes = [
+  'Het profiel van onze gemeente (gratis)',
+  'Quickscan',
+  'Investeringsscan',
+  'Masterclass of training',
+  'Lezing, of een sessie voor raad of rekenkamer',
+  'Iets anders, of eerst even bellen',
+];
+---
+
+<Basis titel={titel} beschrijving={beschrijving}>
+  <article class="kader contact">
+    <header class="pagina-kop">
+      <h1>{metPunt(kop)}</h1>
+      {intro && <p class="intro">{intro}</p>}
+    </header>
+
+    <div class="tweeluik">
+      <section class="formulier" aria-label="Contactformulier">
+        {
+          site.tallyLive ? (
+            <Fragment>
+              {/* Alleen data-tally-src, geen src: het script van Tally pakt een iframe met allebei niet op
+                  en dan groeit het formulier niet mee (de verzendknop valt weg). Laadt het script niet,
+                  dan zet het regeltje eronder het formulier er alsnog in. */}
+              <iframe data-tally-src={formulier} title="Contactformulier: waar kunnen we je mee helpen?" />
+              <script is:inline>
+                (() => {
+                  const toon = () => {
+                    if (typeof Tally !== 'undefined') Tally.loadEmbeds();
+                    else document.querySelectorAll('iframe[data-tally-src]:not([src])').forEach((f) => { f.src = f.dataset.tallySrc; });
+                  };
+                  const s = document.createElement('script');
+                  s.src = 'https://tally.so/widgets/embed.js';
+                  s.onload = toon;
+                  s.onerror = toon;
+                  document.body.appendChild(s);
+                })();
+              </script>
+            </Fragment>
+          ) : (
+            <div class="paneel wacht">
+              <p class="label">Het formulier staat klaar en volgt bij de livegang.</p>
+              <p>
+                Mail tot die tijd naar <a href={`mailto:${site.mail}`}>{site.mail}</a> en zet erbij waar je belangstelling ligt:
+              </p>
+              <ul>
+                {vakjes.map((v) => <li>{v}</li>)}
+              </ul>
+            </div>
+          )
+        }
+      </section>
+
+      <aside class="direct">
+        {
+          lijst.map((s) => (
+            <section aria-labelledby={s.id}>
+              <h2 id={s.id} class="kop-3">{metPunt(s.kop)}</h2>
+              <div class="inhoud" set:html={s.html} />
+            </section>
+          ))
+        }
+        <dl class="gegevens">
+          {
+            ingevuld(site.telefoon) && (
+              <div>
+                <dt class="label">Telefoon</dt>
+                <dd>
+                  <a href={`tel:${site.telefoon.replace(/[^+\d]/g, '')}`}>{site.telefoon}</a>
+                </dd>
+              </div>
+            )
+          }
+          {
+            ingevuld(site.linkedin) && (
+              <div>
+                <dt class="label">LinkedIn</dt>
+                <dd>
+                  <a href={site.linkedin}>Bureau Ongelijk Investeren</a>
+                </dd>
+              </div>
+            )
+          }
+        </dl>
+      </aside>
+    </div>
+  </article>
+</Basis>
+
+<style>
+  .contact {
+    padding-bottom: var(--sectie);
+  }
+
+  .pagina-kop {
+    padding-block: var(--space-12) var(--sectie);
+  }
+
+  .pagina-kop h1 {
+    max-width: 10em;
+    text-wrap: balance;
+  }
+
+  .tweeluik {
+    display: grid;
+    gap: var(--space-12);
+    align-items: start;
+  }
+
+  .formulier iframe {
+    width: 100%;
+    min-height: 46rem;
+    border: 0;
+  }
+
+  /* Zodra Tally zelf de hoogte zet, vervalt de voorlopige hoogte: na het versturen
+     blijft er dan geen leeg vlak onder "Dank je" staan. */
+  .formulier iframe[style*='height'] {
+    min-height: 0;
+  }
+
+  .wacht > * + * {
+    margin-top: var(--space-4);
+  }
+
+  .wacht ul {
+    padding-left: var(--space-6);
+  }
+
+  .direct .inhoud {
+    margin-top: var(--space-4);
+  }
+
+  .gegevens {
+    margin-top: var(--space-6);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .gegevens dt {
+    color: var(--inkt-zacht);
+  }
+
+  @media (min-width: 48rem) {
+    .tweeluik {
+      grid-template-columns: 7fr 5fr;
+      gap: var(--space-12);
+    }
+  }
+</style>

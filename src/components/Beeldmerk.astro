@@ -1,0 +1,42 @@
+---
+// Het beeldmerk: drie ongelijke staven met een ronde kop, over elkaar gedrukt.
+// Maten uit het blad Beeldmerk: breedte 14, verspringing 8, ronde kop met straal 7, hoogte 28.
+interface Props {
+  /** Een van de vier standen. Stand 1 als je er maar één nodig hebt. */
+  stand?: 1 | 2 | 3 | 4;
+  /** Hoogte in px; de breedte volgt. */
+  hoogte?: number;
+}
+
+const { stand = 1, hoogte = 28 } = Astro.props;
+const STANDEN = { 1: [15, 28, 21], 2: [28, 13, 21], 3: [11, 20, 28], 4: [22, 28, 12] } as const;
+const staaf = (x: number, h: number) => `M${x} 28V${28 - h + 7}A7 7 0 0 1 ${x + 14} ${28 - h + 7}V28Z`;
+const [a, b, c] = STANDEN[stand];
+---
+
+<svg class="merk" viewBox="0 0 30 28" width={((hoogte * 30) / 28).toFixed(2)} height={hoogte} aria-hidden="true">
+  <path class="m1" d={staaf(0, a)}></path>
+  <path class="m2" d={staaf(8, b)}></path>
+  <path class="m3" d={staaf(16, c)}></path>
+</svg>
+
+<style>
+  .merk {
+    display: block;
+    flex: none;
+    overflow: visible;
+    isolation: isolate;
+  }
+
+  .merk path {
+    mix-blend-mode: multiply;
+  }
+
+  :global(.donker) .merk path {
+    mix-blend-mode: screen;
+  }
+
+  .m1 { fill: var(--merk-1); }
+  .m2 { fill: var(--merk-2); }
+  .m3 { fill: var(--merk-3); }
+</style>

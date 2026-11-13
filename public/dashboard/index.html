@@ -1,0 +1,1461 @@
+<!doctype html>
+<html lang="nl" data-theme="rood">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ongelijk Investeren Dashboard Nederland</title>
+<meta name="description" content="Het Ongelijk Investeren Dashboard Nederland: de stapeling van ongelijkheden per buurt, voor alle gemeenten, op basis van open data.">
+<link rel="canonical" href="https://ongelijkinvesteren.nl/dashboard/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="sitemap" href="/sitemap-index.xml">
+<link rel="preload" href="/huisstijl/fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/huisstijl/tokens.css">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ongelijk Investeren">
+<meta property="og:title" content="Ongelijk Investeren Dashboard Nederland">
+<meta property="og:description" content="Het Ongelijk Investeren Dashboard Nederland: de stapeling van ongelijkheden per buurt, voor alle gemeenten, op basis van open data.">
+<meta property="og:url" content="https://ongelijkinvesteren.nl/dashboard/">
+<meta property="og:image" content="https://ongelijkinvesteren.nl/deel.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Gelijk is niet eerlijk. Ongelijk Investeren Dashboard Nederland.">
+<meta property="og:locale" content="nl_NL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="generator" content="bouw/3_openbaar.py, openbare versie 1.0 van 13 november 2026">
+
+<style>
+/* Huisstijl Bureau Ongelijk Investeren (v4). Alle kleuren, letters en maten komen uit huisstijl/tokens.css;
+   dit blok bevat geen eigen kleurcodes of lettertypen, alleen verwijzingen naar die tokens.
+   Indeling: kop met keuzestrook, dan inleiding met kerncijfers, kaart naast ranglijst, bevolking tegenover plek, tabel.
+   Warm = slechter dan de vergelijking, koel = beter; de stapelingsschaal (data-0 tot data-4) = een aantal thema's. */
+:root{
+  /* namen die de rekenlaag en de kleurfuncties gebruiken, als verwijzing naar de tokens */
+  --w1:var(--slechter-1); --w2:var(--slechter-2); --w3:var(--slechter-3); --w4:var(--slechter-4); --w5:var(--slechter-5);
+  --k1:var(--beter-1); --k2:var(--beter-2); --k3:var(--beter-3); --k4:var(--beter-4); --k5:var(--beter-5);
+  --fgw1:var(--op-licht); --fgw2:var(--op-licht); --fgw3:var(--op-licht); --fgw4:var(--op-donker); --fgw5:var(--op-donker);
+  --fgk1:var(--op-licht); --fgk2:var(--op-licht); --fgk3:var(--op-licht); --fgk4:var(--op-donker); --fgk5:var(--op-donker);
+  --n0:var(--data-midden);
+  --p0:var(--data-0); --p1:var(--data-1); --p2:var(--data-2); --p3:var(--data-3); --p4:var(--data-4);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--papier)}
+body{margin:0;color:var(--inkt);font-family:var(--font-tekst);font-weight:var(--gewicht-tekst);font-size:var(--klein-maat);line-height:var(--klein-regel);-webkit-font-smoothing:antialiased;font-optical-sizing:auto}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:var(--focus) solid var(--inkt);outline-offset:3px}
+a{color:var(--inkt);text-underline-offset:.2em}
+.num,.cijfer{font-variant-numeric:tabular-nums;font-weight:var(--gewicht-kop)}
+h1,h2,h3{font-family:var(--font-kop);font-weight:var(--gewicht-kop)}
+
+/* ---------- kop ---------- */
+.kop{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--papier);border-bottom:1px solid var(--lijn);
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:var(--papier)}
+.merk{display:flex;align-items:center;gap:10px;min-width:0;color:var(--inkt);text-decoration:none}
+.merkteken{display:block;flex:none;overflow:visible;isolation:isolate}
+.merkteken path{mix-blend-mode:multiply}
+.m1{fill:var(--merk-1)}.m2{fill:var(--merk-2)}.m3{fill:var(--merk-3)}
+.merk b{font-family:var(--font-kop);font-size:var(--woordmerk-maat);font-weight:var(--gewicht-kop);letter-spacing:var(--woordmerk-spatie);line-height:1;display:block;white-space:nowrap}
+.merk small{display:block;font-size:var(--bijschrift-maat);line-height:1.3;font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie);color:var(--inkt-zacht);margin-top:3px}
+.nav{display:flex;gap:4px 20px;flex-wrap:wrap}
+.nav button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;padding:6px 0 3px;cursor:pointer;font-family:var(--font-kop);font-size:var(--knop-maat);line-height:var(--knop-regel);font-weight:var(--gewicht-kop);color:var(--inkt-zacht);white-space:nowrap}
+.nav button:hover{color:var(--inkt)}
+.nav button[aria-current="true"]{color:var(--inkt);border-bottom-color:var(--inkt)}
+.gemzoek{position:relative;flex:1 1 260px;max-width:380px;min-width:0}
+.gemzoek input{width:100%;padding:9px 18px;border:1px solid var(--lijn);border-radius:var(--radius-pil);background:var(--veld);box-shadow:var(--zweef);font-size:var(--knop-maat)}
+.gemzoek input::placeholder{color:var(--inkt-zacht);opacity:1}
+.kop .rechts{margin-left:auto;display:flex;gap:8px;align-items:center}
+.knop{border:0;background:var(--papier);color:var(--inkt);box-shadow:inset 0 0 0 1.5px var(--inkt);border-radius:var(--radius-sm);padding:7px 12px;font-family:var(--font-kop);font-size:13px;line-height:1.3;font-weight:var(--gewicht-kop);cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block}
+.knop:hover{text-decoration:underline 1.5px;text-underline-offset:.25em}
+.knop[aria-pressed="true"],.knop.vol{background:var(--inkt);color:var(--papier)}
+select.knop{padding-right:8px;max-width:min(100%,280px)}
+.lijst{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;background:var(--papier);border:1px solid var(--inkt);border-radius:var(--radius-md);max-height:340px;overflow-y:auto;padding:4px}
+.lijst button{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--klein-maat);font-weight:var(--gewicht-label)}
+.lijst button:hover,.lijst button.actief{background:var(--vlak)}
+.lijst small{margin-left:auto;color:var(--inkt-zacht);font-size:12px;font-weight:var(--gewicht-tekst);white-space:nowrap}
+.lijst .leeg{padding:9px;color:var(--inkt-zacht);font-size:13px}
+
+/* ---------- indeling ----------
+   Geen zijbalk: de rekenregels staan als een strook keuzes onder de kop (elk opent een klein venster).
+   Het werkvlak is één kolom: inleiding met kerncijfers, dan kaart en ranglijst naast elkaar,
+   dan bevolking tegenover plek, en onderaan de volledige tabel. */
+.app{display:block}
+.instel{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-top:1px solid var(--lijn);padding-top:10px;margin-top:-1px}
+.instel>.kl0{font-size:var(--bijschrift-maat);font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie);color:var(--inkt-zacht);margin-right:4px}
+.keuze{position:relative}
+.keuze>summary{list-style:none;display:flex;align-items:baseline;gap:6px;border-radius:var(--radius-sm);box-shadow:inset 0 0 0 1px var(--inkt-zacht);padding:5px 10px;font-size:13px;line-height:1.35;cursor:pointer;white-space:nowrap;background:var(--papier)}
+.keuze>summary::-webkit-details-marker{display:none}
+.keuze>summary::after{content:"▾";font-size:11px;color:var(--inkt-zacht)}
+.keuze>summary .kl{color:var(--inkt-zacht)}
+.keuze>summary b{font-weight:var(--gewicht-kop);font-variant-numeric:tabular-nums}
+.keuze>summary:hover{box-shadow:inset 0 0 0 1.5px var(--inkt)}
+.keuze[open]>summary{box-shadow:inset 0 0 0 1.5px var(--inkt);background:var(--vlak)}
+.keuze .pop{position:absolute;left:0;top:calc(100% + 6px);z-index:45;width:300px;max-width:calc(100vw - 32px);background:var(--papier);border:1px solid var(--inkt);border-radius:var(--radius-md);max-height:min(70vh,560px);overflow-y:auto}
+.keuze.breed .pop{width:360px;left:auto;right:0}
+.keuze.rechts .pop{left:auto;right:0}
+.werk{min-width:0;max-width:1480px;margin:0 auto;padding-block:28px 70px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:24px}
+@media (min-width:901px){.werk{padding-left:30px;padding-right:max(30px,env(safe-area-inset-right,0px))}}
+@media (max-width:900px){
+  .kop{position:static}
+  .keuze .pop{position:fixed;left:16px;right:16px;top:auto;width:auto;max-width:none}
+}
+.blok{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.blok+.blok{border-top:1px solid var(--lijn)}
+.blok>h2{margin:0;font-size:var(--label-maat);font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie);color:var(--inkt-zacht);display:flex;gap:6px;align-items:baseline}
+.blok>h2 span{font-weight:var(--gewicht-tekst);font-variant-numeric:tabular-nums}
+.hint{font-size:13px;color:var(--inkt-zacht);line-height:1.45;margin:0}
+.seg{display:flex;padding:0;gap:4px;flex-wrap:wrap}
+.seg button{flex:1 1 0;border:0;background:var(--papier);box-shadow:inset 0 0 0 1px var(--inkt-zacht);border-radius:var(--radius-sm);padding:7px 8px;font-size:13px;font-weight:var(--gewicht-label);color:var(--inkt);cursor:pointer;white-space:nowrap}
+.seg button:hover{box-shadow:inset 0 0 0 1.5px var(--inkt)}
+.seg button[aria-pressed="true"]{background:var(--inkt);color:var(--papier);box-shadow:inset 0 0 0 1.5px var(--inkt);font-weight:var(--gewicht-kop)}
+.seg button[aria-pressed="true"]::before{content:"✓ "}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.schuif{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--inkt-zacht)}
+.schuif label{min-width:100px}
+.schuif input{flex:1;accent-color:var(--inkt);min-width:0}
+.schuif b{font-size:13px;font-weight:var(--gewicht-kop);font-variant-numeric:tabular-nums;min-width:38px;text-align:right;color:var(--inkt)}
+.vink{display:flex;gap:7px;align-items:flex-start;font-size:13px;color:var(--inkt);cursor:pointer;line-height:1.35}
+.vink input{accent-color:var(--inkt);margin:2px 0 0}
+.vink select.knop{flex:0 1 auto;min-width:0;max-width:280px}
+.kaderkop .vink{min-width:0;max-width:100%}
+.mini{display:flex;gap:12px;flex-wrap:wrap}
+.mini button{background:none;border:0;padding:0;font-size:13px;font-weight:var(--gewicht-label);color:var(--inkt);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.thema{border-top:1px solid var(--lijn);padding-top:8px}
+.thema:first-of-type{border-top:0;padding-top:0}
+.themakop{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:var(--gewicht-kop)}
+.themakop .as{margin-left:auto;font-size:11px;font-weight:var(--gewicht-label);color:var(--inkt-zacht)}
+.indlijst{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.indlijst .vink{font-size:12.5px}
+.indlijst .vink .jr{margin-left:auto;font-variant-numeric:tabular-nums;font-size:11px;color:var(--inkt-zacht);flex:none;padding-left:6px}
+
+/* ---------- werkvlak ---------- */
+.titel h1{font-size:var(--kop-3-maat);margin:0;letter-spacing:var(--kop-3-spatie);line-height:var(--kop-3-regel);text-wrap:balance}
+.titel p{margin:10px 0 0;color:var(--inkt);max-width:64ch;font-size:16px;line-height:1.5}
+.titel .eyebrow{font-size:var(--label-maat);line-height:var(--label-regel);letter-spacing:var(--label-spatie);color:var(--inkt-zacht);font-weight:var(--gewicht-label);margin:0 0 8px}
+.balk{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+/* inleiding: titel links, kerncijfers als lijst rechts */
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,380px);gap:22px 40px;align-items:start}
+.kern{margin:0;padding:0 0 0 22px;border-left:2px solid var(--inkt);display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:16px;align-items:baseline}
+.kern>div{display:contents}
+.kern dd,.kern dt{padding:8px 0;border-bottom:1px solid var(--lijn)}
+.kern>div:last-child dd,.kern>div:last-child dt{border-bottom:0}
+.kern dd{margin:0;font-family:var(--font-kop);font-size:26px;font-weight:var(--gewicht-kop);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.05;text-align:right}
+.kern dt{font-size:13px;color:var(--inkt-zacht);line-height:1.35}
+.kern dt b{display:block;color:var(--inkt);font-size:var(--label-maat);font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie)}
+@media (max-width:900px){.intro{grid-template-columns:1fr}.kern{padding-left:14px}}
+/* kaart en ranglijst naast elkaar */
+.split{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);gap:18px;align-items:start}
+@media (max-width:1050px){.split{grid-template-columns:1fr}}
+.split>.kader{min-width:0}
+.sectiekop{display:flex;gap:10px 16px;align-items:baseline;flex-wrap:wrap;justify-content:space-between}
+.sectiekop h2{font-size:22px;margin:0;letter-spacing:-.02em;line-height:1.15}
+.sectiekop p{margin:4px 0 0;font-size:13px;color:var(--inkt-zacht);max-width:70ch}
+.lijstvak{display:flex;flex-direction:column}
+.lijstvak .kaderkop{padding:14px 16px 0;margin:0}
+.lijstvak .hint{padding:4px 16px 8px}
+.rlijst{overflow-y:auto;max-height:min(72vh,720px);border-top:1px solid var(--lijn)}
+.rij{display:grid;grid-template-columns:30px minmax(0,1fr) auto 58px;gap:10px;align-items:center;padding:7px 16px;border-bottom:1px solid var(--lijn);cursor:pointer}
+.rij:hover,.rij.licht{background:var(--vlak)}
+.rij:focus-visible{outline-offset:-6px}
+.rij.gekozen{box-shadow:inset 4px 0 0 var(--inkt)}
+.rij .nr{font-size:12px;font-weight:var(--gewicht-label);font-variant-numeric:tabular-nums;color:var(--inkt-zacht);text-align:right}
+.rij .nm{font-weight:var(--gewicht-label);font-size:14px;letter-spacing:var(--label-spatie);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rij .nm small{display:block;font-weight:var(--gewicht-tekst);letter-spacing:0;font-size:12px;color:var(--inkt-zacht);overflow:hidden;text-overflow:ellipsis}
+.rij .sc{font-size:14px;font-weight:var(--gewicht-kop);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.strook{display:flex;gap:2px}
+.strook i{width:12px;height:16px;border-radius:2px;display:block;background:var(--n0)}
+.strook i.tus{margin-left:4px}
+.pbalk{width:90px;height:10px;border-radius:var(--radius-pil);background:var(--vlak);overflow:hidden}
+.pbalk i{display:block;height:100%;border-radius:var(--radius-pil);background:var(--data-3)}
+.kaart path.licht{stroke:var(--inkt);stroke-width:2.4px;vector-effect:non-scaling-stroke}
+/* bevolking tegenover plek: diagram met de vier vakken ernaast */
+.kwgrid{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px;align-items:start;margin-top:10px}
+.kwgrid .kwvakken{grid-template-columns:1fr;margin-top:0}
+@media (max-width:900px){.kwgrid{grid-template-columns:1fr}}
+.kader{background:var(--papier);border:1px solid var(--lijn);border-radius:var(--radius-md);min-width:0}
+.kader.pad{padding:18px 20px}
+.kaderkop{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin:0 0 12px}
+.kaderkop h2{font-size:18px;margin:0;letter-spacing:-.02em;line-height:1.2}
+.legenda{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:13px;font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie);color:var(--inkt-zacht)}
+.ramp{display:flex;gap:var(--space-1)}
+.ramp i{width:22px;height:10px;border-radius:2px;display:block;box-shadow:inset 0 0 0 1px var(--lijn)}
+.kw{display:inline-flex;align-items:center;gap:6px}
+.kw i{width:12px;height:12px;border-radius:2px;display:block;box-shadow:inset 0 0 0 1px var(--lijn)}
+.tabwrap{overflow:auto;max-height:74vh;border-radius:var(--radius-md)}
+table{border-collapse:separate;border-spacing:0;font-size:13px;width:max-content;min-width:100%}
+th,td{padding:0;text-align:left;white-space:nowrap}
+thead th{position:sticky;top:0;background:var(--papier);z-index:3;border-bottom:1px solid var(--inkt-zacht);vertical-align:bottom}
+thead tr.r2 th{top:26px}
+thead tr.r2:first-child th{top:0}
+thead tr.r1 th{height:26px}
+.thlab{font-size:11px;font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie);padding:5px 8px;color:var(--inkt-zacht);display:block;overflow:hidden;text-overflow:ellipsis}
+.kolknop{background:none;border:0;padding:8px 8px;font-size:12px;font-weight:var(--gewicht-label);color:var(--inkt);cursor:pointer;width:100%;text-align:left;white-space:normal;line-height:1.25;display:block}
+.kolknop:hover{text-decoration:underline;text-underline-offset:.2em}
+.kolknop:focus-visible{outline-offset:-3px}
+.kolknop .pijl{color:var(--inkt);font-weight:var(--gewicht-kop)}
+th.smal{width:92px;min-width:92px;max-width:92px}
+th.smal .kolknop{font-size:11px;hyphens:auto;-webkit-hyphens:auto;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+th.vast,td.vast{position:sticky;left:0;background:var(--papier);z-index:2}
+thead th.vast{z-index:5}
+tbody td{border-bottom:1px solid var(--lijn);height:34px}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--vlak)}
+tbody tr:focus-visible{outline-offset:-3px}
+tbody tr.gekozen td.vast{box-shadow:inset 4px 0 0 var(--inkt)}
+td.rang{font-size:12px;font-weight:var(--gewicht-label);font-variant-numeric:tabular-nums;color:var(--inkt-zacht);text-align:right;padding:0 8px 0 6px;width:62px;min-width:62px}
+td.rang input{accent-color:var(--inkt);margin:0 6px 0 0;vertical-align:-2px}
+td.naam{padding:0 10px;font-weight:var(--gewicht-label);max-width:230px;overflow:hidden;text-overflow:ellipsis}
+td.naam small{display:block;font-weight:var(--gewicht-tekst);color:var(--inkt-zacht);font-size:11px;line-height:1.15;overflow:hidden;text-overflow:ellipsis}
+td.naam.vast{left:62px}
+th.naam.vast{left:62px}
+td.inw{font-size:12.5px;font-weight:var(--gewicht-kop);font-variant-numeric:tabular-nums;color:var(--inkt);text-align:right;padding:0 10px}
+td.score{padding:0 10px;min-width:136px}
+.sbalk{display:flex;align-items:center;gap:7px}
+.sbalk .staaf{height:8px;border-radius:var(--radius-pil);background:var(--w4);min-width:2px}
+.sbalk .staaf.goed{background:var(--k4)}
+.sbalk .num{font-size:12.5px;margin-left:auto}
+td.cel{text-align:center;font-size:12px;font-weight:var(--gewicht-kop);font-variant-numeric:tabular-nums}
+td.cel span{display:block;padding:6px 4px;border-radius:2px;margin:1px}
+td.cel.leeg span{color:var(--inkt-zacht);font-weight:var(--gewicht-label)}
+td.cel span.vk{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:6px 8px;color:var(--inkt)}
+td.cel span.vk i{flex:none;width:12px;height:12px;border-radius:2px;display:block;box-shadow:inset 0 0 0 1px var(--lijn)}
+.stip{display:flex;gap:2px;align-items:center}
+.stip i{width:7px;height:12px;border-radius:2px;background:var(--lijn);display:block}
+.stip i.aan{background:var(--data-4)}
+.stip .num{font-size:12px;margin-left:6px;color:var(--inkt)}
+td.stap{padding:0 10px}
+.vakken{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ---------- kaart en kwadrant ---------- */
+.kaart{position:relative;background:var(--papier);border-radius:var(--radius-sm);overflow:hidden}
+.kaart svg{display:block;width:100%;height:auto;max-height:76vh}
+.kaart path.v{stroke:var(--papier);stroke-width:1.6;stroke-linejoin:round;cursor:pointer}
+.kaart path.v:hover{stroke:var(--inkt);stroke-width:1.8px;vector-effect:non-scaling-stroke}
+.kaart path.grens{fill:none;stroke:var(--inkt);stroke-width:1.1px;vector-effect:non-scaling-stroke;pointer-events:none;opacity:.55}
+.kaart path.gekozen{stroke:var(--inkt);stroke-width:2.6px;vector-effect:non-scaling-stroke}
+.kaart text{font-family:var(--font-tekst);font-size:11px;font-weight:var(--gewicht-label);fill:var(--inkt);paint-order:stroke;stroke:var(--papier);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.plot{display:block;width:100%;height:auto}
+.plot text{font-family:var(--font-tekst)}
+.plot .tick{font-size:13px;font-weight:var(--gewicht-label);font-variant-numeric:tabular-nums;fill:var(--inkt-zacht)}
+.plot .astitel{font-size:14px;font-weight:var(--gewicht-label);fill:var(--inkt-zacht)}
+.plot .kwlab{font-family:var(--font-kop);font-size:12.5px;font-weight:var(--gewicht-kop);fill:var(--inkt-zacht)}
+.plot .punt{cursor:pointer;stroke:var(--papier);stroke-width:1}
+.plot .punt:hover{stroke:var(--inkt);stroke-width:2}
+.plot .plab{font-size:13px;font-weight:var(--gewicht-label);fill:var(--inkt);paint-order:stroke;stroke:var(--papier);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.kwvakken{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:12px}
+.kwvak{border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;color:var(--inkt-zacht);background:var(--vlak);border-left:5px solid var(--c)}
+.kwvak b{display:block;color:var(--inkt);font-size:var(--label-maat);font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie)}
+.kwvak .num{font-size:13px;color:var(--inkt);font-weight:var(--gewicht-label)}
+
+/* ---------- paneel ---------- */
+.paneel{position:fixed;top:0;right:0;height:100%;width:min(480px,100vw);background:var(--papier);border-left:1.5px solid var(--inkt);border-radius:var(--radius-md) 0 0 var(--radius-md);z-index:60;overflow-y:auto;
+  padding:calc(22px + env(safe-area-inset-top,0px)) max(22px,env(safe-area-inset-right,0px)) calc(60px + env(safe-area-inset-bottom,0px)) 22px}
+.paneel h3{font-size:28px;margin:0 40px 0 0;letter-spacing:-.02em;line-height:1.1}
+.paneel .meta{color:var(--inkt-zacht);font-size:13px;margin:6px 0 14px}
+.sluit{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));border:0;box-shadow:inset 0 0 0 1.5px var(--inkt);background:var(--papier);border-radius:var(--radius-sm);width:32px;height:32px;cursor:pointer;font-size:18px;line-height:1;font-weight:var(--gewicht-kop)}
+.pkern{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 6px}
+.pkern div{background:var(--vlak);border-radius:var(--radius-sm);padding:8px 10px}
+.pkern small{display:block;font-size:12px;letter-spacing:var(--label-spatie);color:var(--inkt-zacht);font-weight:var(--gewicht-label)}
+.pkern b{font-size:16px;font-weight:var(--gewicht-kop);font-variant-numeric:tabular-nums}
+.pth{display:flex;align-items:center;gap:8px;font-size:var(--label-maat);font-weight:var(--gewicht-kop);letter-spacing:var(--label-spatie);color:var(--inkt);margin:18px 0 4px;padding-bottom:5px;border-bottom:1px solid var(--inkt-zacht)}
+.pth .z{margin-left:auto;font-variant-numeric:tabular-nums;padding:2px 8px;border-radius:2px}
+.pth .as{font-size:12px;font-weight:var(--gewicht-label);color:var(--inkt-zacht)}
+.prij{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px 50px;gap:8px;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid var(--lijn)}
+.prij .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prij .w,.prij .m{font-variant-numeric:tabular-nums;text-align:right;font-size:12.5px;font-weight:var(--gewicht-kop)}
+.prij .m{color:var(--inkt-zacht);font-weight:var(--gewicht-label)}
+.prij .z{font-variant-numeric:tabular-nums;font-size:12px;font-weight:var(--gewicht-kop);text-align:center;border-radius:2px;padding:2px 0}
+.prijkop{font-size:12px;font-weight:var(--gewicht-label);color:var(--inkt-zacht);border-bottom:0;padding-bottom:0}
+.prijkop .w{color:var(--inkt-zacht);font-weight:var(--gewicht-label)}
+.othema{display:grid;grid-template-columns:minmax(0,1fr) auto 64px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--lijn);font-size:13px}
+.othema b{font-weight:var(--gewicht-label)}
+.othema small{display:block;color:var(--inkt-zacht);font-size:12px}
+.othema .zw{font-size:12px;font-weight:var(--gewicht-label);color:var(--inkt)}
+.othema .z{font-variant-numeric:tabular-nums;font-size:12.5px;font-weight:var(--gewicht-kop);text-align:center;border-radius:2px;padding:3px 0}
+sup.let{color:var(--stapeling-4);font-weight:var(--gewicht-kop);margin-left:3px;cursor:help}
+.noot.let{background:var(--w1);color:var(--inkt)}
+.noot{font-size:13px;color:var(--inkt);background:var(--vlak);border-radius:var(--radius-sm);padding:9px 11px;margin:10px 0 0}
+
+.tip{position:fixed;z-index:80;background:var(--inkt);color:var(--papier);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;line-height:1.4;max-width:280px;pointer-events:none}
+.tip b{display:block;font-weight:var(--gewicht-kop)}
+.tip .r{opacity:.8}
+
+/* ---------- verantwoording ---------- */
+.tekst{max-width:72ch;font-size:16px;line-height:1.55;color:var(--inkt)}
+.tekst .eyebrow{font-size:var(--label-maat);letter-spacing:var(--label-spatie);color:var(--inkt-zacht);font-weight:var(--gewicht-label);margin:0 0 8px}
+.tekst h1{font-size:var(--kop-3-maat);line-height:var(--kop-3-regel);letter-spacing:var(--kop-3-spatie);margin:0}
+.tekst h2{font-size:24px;margin:30px 0 6px;letter-spacing:-.02em;line-height:1.15}
+.tekst h3{font-size:17px;margin:20px 0 4px}
+.tekst p,.tekst li{line-height:1.6}
+.vtab{font-size:13px;width:100%}
+.vtab th{position:static;font-size:12px;font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie);color:var(--inkt-zacht);padding:9px 10px;background:var(--papier)}
+.vtab td{padding:8px 10px;border-bottom:1px solid var(--lijn);white-space:normal;vertical-align:top;height:auto}
+.vtab tbody tr{cursor:default}
+.vtab tbody tr:hover td{background:none}
+.pil{display:inline-block;font-size:11px;font-weight:var(--gewicht-label);letter-spacing:var(--label-spatie);padding:2px 7px;border-radius:2px;background:var(--lijn);color:var(--inkt)}
+.pil.bev{background:var(--w1);color:var(--inkt)}
+.pil.leef{background:var(--k1);color:var(--inkt)}
+.voet{font-size:13px;color:var(--inkt-zacht);max-width:90ch;line-height:1.6;margin:0}
+.laden{padding:60px 20px;text-align:center;color:var(--inkt-zacht)}
+.fout{padding:24px;border:1.5px solid var(--w4);border-radius:var(--radius-md);background:var(--w1);color:var(--inkt)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* ---------- openbare versie: kop, afsluiter en voet van de site ----------
+   Getrouwe kopie van website/src/components/Kop.astro, Afsluiter.astro en Voet.astro met basis.css (zelfde maten en tokens).
+   Eigen klassenamen (site...) omdat het dashboard .kop, .knop, .nav, .kader en .voet zelf al gebruikt. */
+.naar-inhoud{position:absolute;left:var(--rand);top:var(--space-2);z-index:100;padding:var(--space-2) var(--space-4);background:var(--inkt);color:var(--papier);border-radius:var(--radius-sm);transform:translateY(-300%);font-size:var(--body-maat);line-height:var(--body-regel)}
+.naar-inhoud:focus{transform:none}
+.werkversie{background:var(--inkt);color:var(--papier);font-size:var(--bijschrift-maat);line-height:1.4;font-weight:var(--gewicht-label);text-align:center;padding:var(--space-1) var(--rand)}
+.sitekader{width:100%;max-width:calc(var(--paginabreedte) + 2 * var(--rand));margin-inline:auto;padding-inline:var(--rand)}
+.sitekop{position:relative;z-index:35;background:var(--papier)}
+.sitekop-binnen{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) 26px;padding-block:18px}
+.woordmerk{display:flex;align-items:center;gap:var(--space-2);margin-right:auto;font-family:var(--font-kop);font-weight:var(--gewicht-kop);font-size:var(--woordmerk-maat);letter-spacing:var(--woordmerk-spatie);line-height:1;color:var(--inkt);text-decoration:none;white-space:nowrap}
+.woordmerk .merkteken{height:23px;width:auto}
+.sitenav{flex:1 1 100%}
+.menu{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) 26px;list-style:none;margin:0;padding:0;font-family:var(--font-kop);font-size:var(--knop-maat);line-height:var(--knop-regel);font-weight:var(--gewicht-kop)}
+.menu a:not(.siteknop){display:inline-block;padding-block:9px;color:var(--inkt);text-decoration:none}
+.menu a:not(.siteknop):hover,.menu a:not(.siteknop)[aria-current="page"]{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.3em}
+.siteknop{display:inline-block;padding:14px 20px;border:0;border-radius:var(--radius-sm);background:var(--inkt);color:var(--papier);font-family:var(--font-kop);font-size:var(--knop-maat);line-height:var(--knop-regel);font-weight:var(--gewicht-kop);text-align:center;text-decoration:none;cursor:pointer}
+.siteknop.rand{background:var(--papier);color:var(--inkt);box-shadow:inset 0 0 0 1.5px var(--inkt)}
+.siteknop.klein{padding:9px 14px}
+.siteknop:hover{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.25em}
+.sitedonker .siteknop{background:var(--papier);color:var(--inkt)}
+.menuknop[hidden]{display:none}
+@media (max-width:61.99rem){
+  .sitekop.js .sitenav{display:none}
+  .sitekop.js.open .sitenav{display:block;position:absolute;inset:100% 0 auto 0;background:var(--papier);border-bottom:1px solid var(--lijn);padding:var(--space-2) var(--rand) var(--space-6)}
+  .sitekop.js .menu{flex-direction:column;align-items:flex-start;gap:0;font-size:1.375rem;line-height:1.2;letter-spacing:-.01em}
+  .sitekop.js .menu a:not(.siteknop){padding-block:10px}
+  .sitekop.js .menu .rechts{margin-top:var(--space-4)}
+}
+@media (min-width:62rem){
+  .sitekop-binnen{flex-wrap:nowrap;padding-block:26px}
+  .woordmerk{gap:10px;margin-right:18px}
+  .woordmerk .merkteken{height:28px}
+  .sitenav{flex:1 1 auto}
+  .menu{flex-wrap:nowrap}
+  .menu .rechts{margin-left:auto}
+  .menuknop{display:none}
+}
+/* de werkbalk van het dashboard en het werkvlak lijnen uit met de kop van de site */
+.kop{border-top:1px solid var(--lijn);padding-left:max(var(--rand),(100% - var(--paginabreedte)) / 2,env(safe-area-inset-left,0px));padding-right:max(var(--rand),(100% - var(--paginabreedte)) / 2,env(safe-area-inset-right,0px))}
+.werk{max-width:calc(var(--paginabreedte) + 2 * var(--rand));padding-left:max(var(--rand),env(safe-area-inset-left,0px));padding-right:max(var(--rand),env(safe-area-inset-right,0px))}
+@media (min-width:901px){.werk{padding-left:var(--rand);padding-right:max(var(--rand),env(safe-area-inset-right,0px))}}
+.knop.groot{font-size:var(--knop-maat);line-height:var(--knop-regel);padding:10px 16px;white-space:normal;text-align:left}
+.vast{font-size:13px;line-height:1.35;padding:5px 10px;border-radius:var(--radius-sm);background:var(--vlak);white-space:nowrap}
+.versie{margin-left:auto;font-size:var(--bijschrift-maat);font-weight:var(--gewicht-label);color:var(--inkt-zacht);white-space:nowrap}
+@media (max-width:900px){.vast{white-space:normal}.versie{margin-left:0}}
+/* afsluiter: het donkere blok onderaan elke pagina van de site */
+.sitedonker{background:var(--inkt);color:var(--papier)}
+.sitedonker :focus-visible{outline-color:var(--papier)}
+.afsluiter{position:relative;overflow:hidden;font-size:var(--body-maat);line-height:var(--body-regel)}
+.afsluiter .binnen{position:relative;padding-block:var(--sectie) calc(var(--sectie) + 150px)}
+.afsluiter h2{margin:0;font-size:var(--kop-2-maat);line-height:var(--kop-2-regel);letter-spacing:var(--kop-2-spatie);text-wrap:balance}
+.afsluiter .lood{margin:22px 0 0;max-width:var(--leesbreedte);text-wrap:pretty}
+.afsluiter .actieregel{margin:28px 0 0}
+.afsluiter a:not(.siteknop){color:var(--papier)}
+.merkrij{position:absolute;right:var(--rand);bottom:0;height:150px;width:auto;max-width:none;isolation:isolate;display:block}
+.merkrij path{mix-blend-mode:screen}
+@media (min-width:48rem){.afsluiter .binnen{padding-bottom:var(--sectie)}.merkrij{height:min(78%,300px)}}
+/* voet */
+.sitevoet{border-top:1px solid var(--lijn);font-size:var(--klein-maat);line-height:var(--klein-regel);color:var(--inkt)}
+.sitevoet p,.sitevoet ul,.sitevoet dl,.sitevoet dd{margin:0}
+.sitevoet-binnen{display:grid;gap:var(--space-6);padding-block:var(--space-12)}
+.sitevoet .woordmerk{gap:var(--space-2);margin-right:0;font-size:1.125rem}
+.sitevoet .woordmerk .merkteken{height:23px}
+.sitevoet-merk .klein{margin-top:var(--space-2);max-width:22em;font-size:var(--klein-maat);line-height:var(--klein-regel);color:var(--inkt-zacht)}
+.sitevoet .gegevens{margin-top:var(--space-2);color:var(--inkt-zacht)}
+.sitevoet .gegevens div{display:flex;gap:var(--space-2)}
+.sitevoet .gegevens dt{min-width:5rem}
+.sitevoet .gegevens dd{font-variant-numeric:tabular-nums}
+.sitevoet-links{list-style:none;padding:0}
+.sitevoet a{display:inline-block;padding-block:2px;color:inherit;text-decoration-thickness:1.5px;text-underline-offset:.2em}
+.sitevoet a:hover{text-decoration-thickness:3px}
+.sitevoet .jaar{margin-top:var(--space-2);color:var(--inkt-zacht)}
+@media (min-width:48rem){.sitevoet-binnen{grid-template-columns:5fr 4fr 3fr;gap:var(--space-6)}}
+</style>
+
+<a class="naar-inhoud" href="#werk">Naar de inhoud</a>
+<div class="werkversie">Werkversie · niet gepubliceerd</div>
+<header class="sitekop">
+  <div class="sitekader sitekop-binnen">
+    <a class="woordmerk" href="/"><svg class="merkteken" viewBox="0 0 30 28" width="30.00" height="28" aria-hidden="true"><path class="m1" d="M0 28V20A7 7 0 0 1 14 20V28Z"/><path class="m2" d="M8 28V7A7 7 0 0 1 22 7V28Z"/><path class="m3" d="M16 28V14A7 7 0 0 1 30 14V28Z"/></svg><span>Ongelijk Investeren</span></a>
+    <button class="siteknop rand klein menuknop" type="button" aria-expanded="false" aria-controls="hoofdmenu" hidden>Menu</button>
+    <nav id="hoofdmenu" class="sitenav" aria-label="Hoofdmenu"><ul class="menu"><li><a href="/dashboard/" aria-current="page">Dashboard</a></li><li><a href="/aanbod/">Aanbod</a></li><li><a href="/masterclass/">Masterclass</a></li><li><a href="/methode/">Methode</a></li><li><a href="/over/">Over</a></li><li class="rechts"><a href="/contact/" class="siteknop rand klein">Contact</a></li></ul></nav>
+  </div>
+</header>
+<script>
+  // Op smalle schermen klapt het menu in achter de knop Menu, zoals op de site (Kop.astro). Zonder JavaScript blijft het zichtbaar.
+  (function () {
+    var kop = document.querySelector(".sitekop"), knop = kop.querySelector(".menuknop");
+    kop.classList.add("js"); knop.hidden = false;
+    function zet(open) { kop.classList.toggle("open", open); knop.setAttribute("aria-expanded", open ? "true" : "false"); knop.textContent = open ? "Sluiten" : "Menu"; }
+    knop.addEventListener("click", function () { zet(!kop.classList.contains("open")); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && kop.classList.contains("open")) { zet(false); knop.focus(); } });
+    // "Naar de inhoud": het dashboard leest het adres na het #, dus springen gaat hier zonder het adres te veranderen
+    document.querySelector(".naar-inhoud").addEventListener("click", function (e) {
+      var m = document.getElementById("werk"); if (!m) return; e.preventDefault(); m.setAttribute("tabindex", "-1"); m.focus(); m.scrollIntoView();
+    });
+  })();
+</script>
+<div class="kop">
+  <nav class="nav" aria-label="Weergave">
+    <button type="button" data-ga="nederland" id="navNL">Nederland</button>
+    <button type="button" data-ga="gemeente" id="navGM">Gemeente</button>
+    <button type="button" data-ga="verantwoording" id="navV">Verantwoording</button>
+  </nav>
+  <div class="gemzoek">
+    <input id="gemZoek" type="search" placeholder="Zoek een gemeente…" autocomplete="off" aria-label="Zoek een gemeente">
+    <div class="lijst" id="gemLijst" hidden></div>
+  </div>
+  <div class="rechts"><a class="knop vol groot" href="/contact/">Wil je weten of jullie inzet de opgave volgt?</a></div>
+  <div class="instel" id="rail" role="group" aria-label="Rekenregels">
+    <span class="kl0">Vaste rekenregels</span>
+    <span class="vast">Vergeleken met Nederland</span><span class="vast">Thema's even zwaar</span><span class="vast">Stapeling vanaf 4 van 8 thema's</span><span class="vast">Buurten vanaf 200 inwoners, wijken vanaf 1.000 · 70% gevuld · zonder studentenbuurten</span>
+    <details class="keuze alleenGM">
+      <summary><span class="kl">Niveau</span> <b id="vNiveau"></b></summary>
+      <div class="pop"><div class="blok">
+        <div class="seg" id="segNiveau">
+          <button type="button" data-v="buurt">Buurt</button>
+          <button type="button" data-v="wijk">Wijk</button>
+        </div>
+      </div></div>
+    </details>
+    <span class="versie">Versie 1.0 · 13 november 2026</span>
+  </div>
+</div>
+
+<div class="app">
+
+  <main class="werk" id="werk">
+    <div class="laden" id="laden">Cijfers voor alle buurten van Nederland worden geladen…</div>
+  </main>
+</div>
+<section class="sitedonker afsluiter" aria-labelledby="afsluiter-kop">
+  <svg class="merkrij" viewBox="0 0 304 300" aria-hidden="true"><path class="m1" d="M0 300V236A32 32 0 0 1 64 236V300Z"/><path class="m2" d="M40 300V132A32 32 0 0 1 104 132V300Z"/><path class="m3" d="M80 300V200A32 32 0 0 1 144 200V300Z"/><path class="m1" d="M120 300V262A32 32 0 0 1 184 262V300Z"/><path class="m2" d="M160 300V96A32 32 0 0 1 224 96V300Z"/><path class="m3" d="M200 300V222A32 32 0 0 1 264 222V300Z"/><path class="m1" d="M240 300V164A32 32 0 0 1 304 164V300Z"/></svg>
+  <div class="sitekader binnen">
+    <h2 id="afsluiter-kop">Het profiel van je gemeente kun je nu al krijgen.</h2>
+    <p class="lood">We sturen het je toe als pdf: één A4 met de buurten waar de stapeling het grootst is. Vink het aan in het formulier. Een halfuur meedenken over de vraag of dit iets voor je gemeente is, kost niets.</p>
+    <p class="actieregel"><a class="siteknop vol" href="/contact/">Vraag het profiel van je gemeente aan</a></p>
+  </div>
+</section>
+<footer class="sitevoet">
+  <div class="sitekader sitevoet-binnen">
+    <div class="sitevoet-merk">
+      <p class="woordmerk"><svg class="merkteken" viewBox="0 0 30 28" width="24.64" height="23" aria-hidden="true"><path class="m1" d="M0 28V24A7 7 0 0 1 14 24V28Z"/><path class="m2" d="M8 28V15A7 7 0 0 1 22 15V28Z"/><path class="m3" d="M16 28V7A7 7 0 0 1 30 7V28Z"/></svg><span>Bureau Ongelijk Investeren</span></p>
+      <p class="klein">Beheert het Ongelijk Investeren Dashboard Nederland.</p>
+    </div>
+    <div class="sitevoet-contact"><p><a href="mailto:maurijn@ongelijkinvesteren.nl">maurijn@ongelijkinvesteren.nl</a></p></div>
+    <ul class="sitevoet-links">
+      <li><a href="/colofon/">Colofon</a></li>
+      <li><a href="/privacy/">Privacy</a></li>
+      <li class="jaar">© 2026 Bureau Ongelijk Investeren</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function () {
+"use strict";
+// Werkversie (alle indicatoren, instelbare rekenregels) of openbare versie (vooraf berekende themascores, vaste regels).
+// bouw/3_openbaar.py maakt de openbare versie uit dit bestand en zet hier OPENBAAR op true.
+const OPENBAAR = true, DATAVERSIE = "1.0-13-11-2026-1607";
+
+/* ===================== hulpjes ===================== */
+const $ = (s, r) => (r || document).querySelector(s);
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+const NS = "http://www.w3.org/2000/svg";
+const sv = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+const NF = {};
+const nf = (d) => NF[d] || (NF[d] = new Intl.NumberFormat("nl-NL", { minimumFractionDigits: d, maximumFractionDigits: d }));
+const fmt = (v, d) => (v == null || !isFinite(v) ? "–" : nf(d == null ? 1 : d).format(v));
+const fz = (z) => (z == null ? "–" : (z > 0 ? "+" : z < 0 ? "−" : "") + nf(2).format(Math.abs(z)));
+const pct = (v, d) => (v == null ? "–" : nf(d == null ? 0 : d).format(v * 100) + "%");
+const norm = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const gem = (a) => { let s = 0, n = 0; for (const x of a) if (x != null) { s += x; n++; } return n ? s / n : null; };
+const opslag = { lees(k, d) { try { const v = localStorage.getItem("bsnl." + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  zet(k, v) { try { localStorage.setItem("bsnl." + k, JSON.stringify(v)); } catch (e) {} } };
+
+/* ===================== toestand ===================== */
+const S = {
+  ga: "nederland", gem: null, niveau: "buurt", bench: "nl", score: "z", weging: "thema",
+  stapDrempel: 4, zonderStud: true, minInw: { buurt: 200, wijk: 1000 }, minDek: 0.7, aan: null,
+  kaartKleur: "totaal", toonInd: false, sort: { k: "score", r: -1 }, nlSort: { k: "pst", r: -1 }, nlKleur: "pst",
+  pick: new Set(), alleenPick: false, prov: "", gekozen: null,
+};
+
+let D, IND, TH, NIND, GEM = [], LV = { buurt: [], wijk: [] }, GEMIDX = {};
+const GEO = {}; // per gemeente geladen kaartgrenzen
+
+/* ===================== data voorbereiden ===================== */
+function bereidVoor(d) {
+  D = d; IND = d.ind; TH = d.themas; NIND = IND.length;
+  IND.forEach((x, i) => { x.i = i; x.th = TH.find((t) => t.k === x.t) || null; });
+  GEM = d.gem.map((g, j) => Object.assign({ j }, g));
+  GEM.forEach((g) => (GEMIDX[g.c.toLowerCase()] = g));
+  for (const lv of ["buurt", "wijk"]) {
+    const s = d[lv];
+    LV[lv] = s.c.map((c, k) => {
+      const v = s.v[k];
+      const tv = v.map((x, i) => (x == null ? null : IND[i].log ? Math.log(x + (IND[i].log || 1)) : x));
+      return { c, n: s.n[k], g: s.g[k], w: s.w ? s.w[k] : null, i: s.i[k] || 0, v, tv, lv };
+    });
+  }
+  // wijknaam per buurt
+  const WN = {}; LV.wijk.forEach((w) => (WN[w.c] = w.n));
+  LV.buurt.forEach((b) => (b.wn = b.w != null ? WN[D.wijk.c[b.w]] || "" : ""));
+  STUD = IND.findIndex((x) => x.k === "stud"); WMO = IND.findIndex((x) => x.k === "wmo");
+  S.aan = IND.map((x) => indTelt(x) && x.std !== false);
+  const bewaard = opslag.lees("aan", null);
+  if (bewaard && bewaard.length === NIND) S.aan = bewaard.map((x, i) => !!x && indTelt(IND[i]));
+}
+// Openbare versie: geen indicatorwaarden, alleen de uitkomsten die bouw/3_openbaar.py met de vaste regels heeft berekend.
+// Daarmee worden dezelfde structuren gevuld die landelijk() en gemeenteOverzicht() anders zelf uitrekenen.
+const VAST = {}; let VASTAGG = null;
+function bereidVoorOpenbaar(d) {
+  D = d; IND = d.ind; TH = d.themas; NIND = IND.length;
+  IND.forEach((x, i) => { x.i = i; x.th = TH.find((t) => t.k === x.t) || null; });
+  GEM = d.gem.map((g, j) => Object.assign({ j }, g));
+  GEM.forEach((g) => (GEMIDX[g.c.toLowerCase()] = g));
+  for (const lv of ["buurt", "wijk"]) {
+    const s = d[lv], rows = [], res = new Map();
+    LV[lv] = s.c.map((c, k) => {
+      const r = { c, n: s.n[k], g: s.g[k], w: s.w ? s.w[k] : null, i: s.i[k] || 0, sig: s.sig[k] || 0, lv };
+      if (s.t[k]) {
+        const th = {}; let m = 0;
+        TH.forEach((t, j) => { const z = s.s[k][j]; th[t.k] = z; if (z != null) m++; });
+        res.set(r, { th, tot: s.tot[k], bev: s.bev[k], leef: s.leef[k], stap: s.stap[k], stapN: m, dub: !!s.dub[k], kw: s.kw[k],
+          zw: TH.map((t, j) => !!((s.zw[k] >> j) & 1)), rang0: s.r[k] });
+        rows.push(r);
+      }
+      return r;
+    });
+    VAST[lv] = { rows, ref: null, res, dr: null, A: [] };
+  }
+  const WN = {}; LV.wijk.forEach((w) => (WN[w.c] = w.n));
+  LV.buurt.forEach((b) => (b.wn = b.w != null ? WN[D.wijk.c[b.w]] || "" : ""));
+  S.aan = IND.map(() => false);
+  VASTAGG = GEM.map((g) => ({ g, nMee: g.nMee, inwMee: g.inwMee, nStap: g.nStap, inwStap: g.inwStap, nDub: g.nDub, inwDub: g.inwDub,
+    pst: g.inwMee ? g.inwStap / g.inwMee : null, mz: g.mz, sd: g.sd, bev: g.bev, leef: g.leef, kw: g.kw, zwaarst: g.zw ? { n: g.zw[0], z: g.zw[1] } : null }));
+}
+// groepen die niet meetellen in de opgave
+const NIETMEE = [["geb", "Gebruik van voorzieningen"], ["verd", "Verdieping"], ["ctx", "Context"]];
+const indTelt = (x) => !NIETMEE.some(([k]) => k === x.t);
+
+/* ===================== rekenen ===================== */
+const actief = () => IND.filter((x) => S.aan[x.i] && indTelt(x)).map((x) => x.i);
+function dekking(r, A) { let n = 0; for (const i of A) if (r.tv[i] != null) n++; return n; }
+let STUD = -1, WMO = -1;
+// Signalen bij gebieden waar de cijfers waarschijnlijk iets anders meten dan de buurt zelf
+function signalen(r) {
+  const s = [];
+  if (OPENBAAR) {
+    if (r.sig & 1) s.push("Veel inwoners studeren in het hbo of wo (15% of meer). Inkomen, vermogen en armoede zijn daardoor ongunstiger dan de situatie doet vermoeden.");
+    if (r.sig & 2) s.push("Veel Wmo-cliënten (250 of meer per 1.000 inwoners): waarschijnlijk staat hier een zorg- of woonvoorziening. De cijfers gaan dan vooral over de bewoners daarvan.");
+    return s;
+  }
+  if (STUD >= 0 && r.v[STUD] != null && r.v[STUD] >= 15)
+    s.push(fmt(r.v[STUD], 0) + "% van de inwoners studeert in het hbo of wo. Inkomen, vermogen en armoede zijn daardoor ongunstiger dan de situatie doet vermoeden.");
+  if (WMO >= 0 && r.v[WMO] != null && r.v[WMO] >= 250)
+    s.push(fmt(r.v[WMO], 0) + " Wmo-cliënten per 1.000 inwoners: waarschijnlijk staat hier een zorg- of woonvoorziening. De cijfers gaan dan vooral over de bewoners daarvan.");
+  return s;
+}
+const isStudent = (r) => STUD >= 0 && r.v[STUD] != null && r.v[STUD] >= 25;
+function telt(r, A) { return r.i >= S.minInw[r.lv] && dekking(r, A) >= Math.ceil(S.minDek * A.length) && !(S.zonderStud && isStudent(r)); }
+
+// inwonergewogen gemiddelde en standaarddeviatie per indicator
+function stats(rows, A) {
+  const m = new Array(NIND).fill(null), s = new Array(NIND).fill(null);
+  for (const i of A) {
+    let sw = 0, swx = 0, n = 0;
+    for (const r of rows) { const v = r.tv[i]; if (v == null) continue; const w = Math.max(1, r.i); sw += w; swx += w * v; n++; }
+    if (n < 5) continue;
+    const mu = swx / sw; let q = 0;
+    for (const r of rows) { const v = r.tv[i]; if (v != null) q += Math.max(1, r.i) * (v - mu) * (v - mu); }
+    m[i] = mu; s[i] = Math.sqrt(q / sw) || null;
+  }
+  return { m, s, n: rows.length };
+}
+const KAP = 4; // z-scores worden afgekapt op ±4
+function scoor(r, ref, A) {
+  const z = new Array(NIND).fill(null);
+  for (let i = 0; i < NIND; i++) {
+    const v = r.tv[i];
+    if (v == null || ref.m[i] == null || !ref.s[i]) continue;
+    z[i] = Math.max(-KAP, Math.min(KAP, (-IND[i].r * (v - ref.m[i])) / ref.s[i]));
+  }
+  const th = {}; let cnt = 0, n = 0;
+  for (const t of TH) th[t.k] = gem(A.filter((i) => IND[i].t === t.k).map((i) => z[i]));
+  for (const i of A) if (z[i] != null) { n++; if (z[i] > 0) cnt++; }
+  const groep = (f) => S.weging === "ind"
+    ? gem(A.filter((i) => f(IND[i].th)).map((i) => z[i]))
+    : gem(TH.filter(f).map((t) => th[t.k]));
+  return { z, th, tot: groep(() => true), bev: groep((t) => t && t.as === "bev"), leef: groep((t) => t && t.as === "leef"), aandeel: n ? cnt / n : null, n };
+}
+function drempels(res) { // 80e percentiel per thema: grens van de zwaarste 20%
+  const d = {};
+  for (const t of TH) {
+    const v = res.map((x) => x.th[t.k]).filter((x) => x != null).sort((a, b) => a - b);
+    d[t.k] = v.length >= 5 ? v[Math.max(0, Math.ceil(v.length * 0.8) - 1)] : null;
+  }
+  return d;
+}
+// stap = aantal thema's in de zwaarste 20%; dub = dubbele stapeling: minstens twee bevolkingsthema's én twee plekthema's
+function stapel(x, d) {
+  let s = 0, m = 0, sb = 0, sp = 0;
+  for (const t of TH) { const z = x.th[t.k]; if (z == null || d[t.k] == null) continue; m++; if (z >= d[t.k]) { s++; if (t.as === "bev") sb++; else sp++; } }
+  x.stap = m ? s : null; x.stapN = m; x.dub = m ? sb >= 2 && sp >= 2 : null;
+}
+function kwadrant(x) { if (x.bev == null || x.leef == null) return null; return x.bev > 0 ? (x.leef > 0 ? "dubbel" : "bev") : x.leef > 0 ? "omg" : "geen"; }
+const scoreVan = (x) => (S.score === "stapel" ? x.stap : S.score === "aandeel" ? x.aandeel : x.tot);
+
+// Landelijke berekening: alle buurten (of wijken) van Nederland tegen het Nederlandse gemiddelde.
+const CACHE = {};
+function sleutel(extra) { return [S.weging, S.zonderStud, S.minInw.buurt, S.minInw.wijk, S.minDek, S.aan.map((x) => (x ? 1 : 0)).join(""), extra].join("|"); }
+function landelijk(lv) {
+  if (OPENBAAR) return VAST[lv];
+  const k = sleutel("nl" + lv);
+  if (CACHE[k]) return CACHE[k];
+  const A = actief();
+  const rows = LV[lv].filter((r) => telt(r, A));
+  const ref = stats(rows, A);
+  const res = new Map();
+  rows.forEach((r) => res.set(r, scoor(r, ref, A)));
+  const dr = drempels([...res.values()]);
+  res.forEach((x) => { stapel(x, dr); x.kw = kwadrant(x); });
+  return (CACHE[k] = { rows, ref, res, dr, A });
+}
+function groepRef(lv, filter, naam) {
+  const k = sleutel(naam + lv);
+  if (CACHE[k]) return CACHE[k];
+  const A = actief();
+  const rows = LV[lv].filter((r) => filter(r) && telt(r, A));
+  const ref = stats(rows, A);
+  const res = new Map(); rows.forEach((r) => res.set(r, scoor(r, ref, A)));
+  const dr = drempels([...res.values()]);
+  return (CACHE[k] = { rows, ref, res, dr, A });
+}
+// Resultaat voor de gekozen gemeente volgens de gekozen vergelijking
+function gemeenteResultaat() {
+  const g = S.gem, lv = S.niveau, A = actief();
+  const alle = LV[lv].filter((r) => r.g === g.j);
+  const mee = OPENBAAR ? alle.filter((r) => VAST[lv].res.has(r)) : alle.filter((r) => telt(r, A));
+  let ref, dr, res = new Map();
+  if (S.bench === "nl") {
+    const L = landelijk(lv); ref = L.ref; dr = L.dr; mee.forEach((r) => res.set(r, L.res.get(r)));
+  } else {
+    const G = S.bench === "gem"
+      ? groepRef(lv, (r) => r.g === g.j, "gm" + g.c)
+      : groepRef(lv, (r) => GEM[r.g].st === g.st, "st" + g.st);
+    ref = G.ref; dr = G.dr;
+    mee.forEach((r) => { const x = scoor(r, ref, A); stapel(x, dr); x.kw = kwadrant(x); res.set(r, x); });
+  }
+  // openbaar: de volgorde die 3_openbaar.py op de onafgeronde scores heeft bepaald
+  const rij = mee.filter((r) => scoreVan(res.get(r)) != null).sort(OPENBAAR ? (a, b) => res.get(a).rang0 - res.get(b).rang0
+    : (a, b) => scoreVan(res.get(b)) - scoreVan(res.get(a)) || a.n.localeCompare(b.n, "nl"));
+  rij.forEach((r, k) => (res.get(r).rang = k + 1));
+  return { alle, mee, ref, dr, res, A, nRang: rij.length };
+}
+// Per gemeente samenvatten (landelijke vergelijking, buurtniveau)
+function gemeenteOverzicht() {
+  if (OPENBAAR) return VASTAGG;
+  const k = sleutel("ov" + S.stapDrempel);
+  if (CACHE[k]) return CACHE[k];
+  const L = landelijk("buurt");
+  const agg = GEM.map((g) => ({ g, inwMee: 0, inwStap: 0, nStap: 0, inwDub: 0, nDub: 0, nMee: 0, sw: 0, swx: 0, swxx: 0, zwaarst: null, nKw: { dubbel: 0, bev: 0, omg: 0, geen: 0 }, sb: 0, sbx: 0, sl: 0, slx: 0 }));
+  L.res.forEach((x, r) => {
+    const a = agg[r.g]; if (!a || x.tot == null) return;
+    const w = Math.max(1, r.i);
+    a.nMee++; a.inwMee += r.i; a.sw += w; a.swx += w * x.tot; a.swxx += w * x.tot * x.tot;
+    if (x.stap != null && x.stap >= S.stapDrempel) { a.nStap++; a.inwStap += r.i; }
+    if (x.dub) { a.nDub++; a.inwDub += r.i; }
+    if (x.kw) a.nKw[x.kw] += r.i;
+    if (x.bev != null) { a.sb += w; a.sbx += w * x.bev; }
+    if (x.leef != null) { a.sl += w; a.slx += w * x.leef; }
+    if (!a.zwaarst || x.tot > a.zwaarst.z) a.zwaarst = { n: r.n, z: x.tot };
+  });
+  agg.forEach((a) => {
+    a.pst = a.inwMee ? a.inwStap / a.inwMee : null;
+    a.mz = a.sw ? a.swx / a.sw : null;
+    a.sd = a.nMee >= 3 ? Math.sqrt(Math.max(0, a.swxx / a.sw - a.mz * a.mz)) : null;
+    // gemeente = inwonergewogen gemiddelde van de buurtscores (tegen heel Nederland)
+    a.bev = a.sb ? a.sbx / a.sb : null; a.leef = a.sl ? a.slx / a.sl : null; a.kw = kwadrant(a);
+  });
+  return (CACHE[k] = agg);
+}
+
+/* ===================== kleur ===================== */
+function zKleur(z) {
+  if (z == null) return { bg: "transparent", fg: "var(--inkt-zacht)" };
+  const a = Math.abs(z), st = a < 0.25 ? 0 : a < 0.6 ? 1 : a < 1 ? 2 : a < 1.5 ? 3 : a < 2.1 ? 4 : 5;
+  if (!st) return { bg: "var(--n0)", fg: "var(--inkt-zacht)" };
+  const k = z > 0 ? "w" : "k";
+  return { bg: `var(--${k}${st})`, fg: `var(--fg${k}${st})` };
+}
+function aKleur(a) { // aandeel ondergemiddeld 0..1
+  if (a == null) return { bg: "transparent", fg: "var(--inkt-zacht)" };
+  return zKleur((a - 0.5) * 4.2);
+}
+function sKleur(s) {
+  if (s == null) return { bg: "transparent", fg: "var(--inkt-zacht)" };
+  const st = Math.min(4, s);
+  return { bg: `var(--p${st})`, fg: `var(--fgp${st})` };
+}
+function scoreKleur(x) { return S.score === "stapel" ? sKleur(x.stap) : S.score === "aandeel" ? aKleur(x.aandeel) : zKleur(x.tot); }
+const KW = { dubbel: ["Bevolking én plek zwaar", "var(--kwadrant-dubbel)"], bev: ["Vooral de bevolking", "var(--kwadrant-bevolking)"], omg: ["Vooral de plek", "var(--kwadrant-plek)"], geen: ["Beide lichter dan gemiddeld", "var(--kwadrant-geen)"] };
+function pstKleur(p) { // aandeel inwoners in stapelingsbuurten
+  if (p == null) return "var(--data-geen)";
+  const st = p <= 0 ? 0 : p < 0.05 ? 1 : p < 0.15 ? 2 : p < 0.3 ? 3 : 4;
+  return `var(--p${st})`;
+}
+
+/* ===================== teksten ===================== */
+const ev = (lv, n) => (lv === "wijk" ? (n === 1 ? "wijk" : "wijken") : n === 1 ? "buurt" : "buurten");
+function benchNaam() {
+  if (S.bench === "gem") return "het gemiddelde van " + S.gem.n;
+  if (S.bench === "sted") return "het gemiddelde van gemeenten die even stedelijk zijn (" + STED[S.gem.st] + ")";
+  return "het Nederlandse gemiddelde";
+}
+const STED = { 1: "zeer sterk stedelijk", 2: "sterk stedelijk", 3: "matig stedelijk", 4: "weinig stedelijk", 5: "niet stedelijk" };
+// Teksten over de thema's volgen de data, zodat ze kloppen als de indeling verandert.
+const TELWOORD = ["nul", "één", "twee", "drie", "vier", "vijf", "zes", "zeven", "acht", "negen", "tien"];
+const telwoord = (n) => TELWOORD[n] || String(n);
+const opsom = (a) => (a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " en " + a[a.length - 1]);
+const themaNamen = (as) => opsom(TH.filter((t) => t.as === as).map((t) => t.n.charAt(0).toLowerCase() + t.n.slice(1)));
+const nThema = (as) => TH.filter((t) => t.as === as).length;
+const SCOREUITLEG = {
+  z: "Gemiddelde afwijking van de vergelijking, in standaarddeviaties. Boven nul is zwaarder dan gemiddeld.",
+  get stapel() { return "In hoeveel van de " + telwoord(TH.length) + " thema's een gebied bij de zwaarste 20% van de vergelijkingsgroep hoort. Vijf van " + telwoord(TH.length) + " is iets anders dan één diep probleem."; },
+  aandeel: "Welk deel van de indicatoren ongunstiger is dan het gemiddelde. Zegt niets over hoe ver.",
+};
+
+/* ===================== zijbalk ===================== */
+function seg(id, key, fn) {
+  const box = $(id);
+  box.querySelectorAll("button").forEach((b) => {
+    b.onclick = () => { S[key] = b.dataset.v; if (!OPENBAAR) opslag.zet(key, S[key]); const d = b.closest("details"); if (d) d.open = false; if (fn) fn(); teken(); };
+  });
+}
+function railBij() {
+  if (OPENBAAR) { // alleen het niveau is te kiezen; de rest ligt vast
+    $("#segNiveau").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", S.niveau === b.dataset.v));
+    const b = $("#segNiveau").querySelector('[data-v="' + S.niveau + '"]'); $("#vNiveau").textContent = b ? b.textContent : "";
+    document.querySelectorAll(".alleenGM").forEach((e) => (e.hidden = S.ga !== "gemeente"));
+    return;
+  }
+  for (const [id, key] of [["#segBench", "bench"], ["#segNiveau", "niveau"], ["#segScore", "score"], ["#segWeging", "weging"]])
+    $(id).querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", S[key] === b.dataset.v));
+  document.querySelectorAll(".alleenGM").forEach((e) => (e.hidden = S.ga !== "gemeente"));
+  $("#scoreUitleg").textContent = SCOREUITLEG[S.score];
+  const knopTekst = (id, key) => { const b = $(id).querySelector('[data-v="' + S[key] + '"]'); return b ? b.textContent : ""; };
+  $("#vBench").textContent = knopTekst("#segBench", "bench"); $("#vNiveau").textContent = knopTekst("#segNiveau", "niveau");
+  $("#vScore").textContent = knopTekst("#segScore", "score"); $("#vWeging").textContent = knopTekst("#segWeging", "weging");
+  $("#wegingUitleg").textContent = S.weging === "thema"
+    ? "Elk thema telt even zwaar, hoeveel indicatoren het ook heeft."
+    : "Elke indicator telt even zwaar; thema's met veel indicatoren wegen zwaarder.";
+  if (S.gem) $("#benchUitleg").textContent = "Elk gebied wordt vergeleken met " + benchNaam() + ".";
+  const lv = S.ga === "gemeente" ? S.niveau : "buurt";
+  const mi = $("#minInw"); mi.max = lv === "wijk" ? 5000 : 2000; mi.step = lv === "wijk" ? 100 : 50; mi.value = S.minInw[lv];
+  $("#minInwW").textContent = S.minInw[lv];
+  $("#minDek").value = Math.round(S.minDek * 100); $("#minDekW").textContent = Math.round(S.minDek * 100) + "%";
+  $("#zonderStud").checked = S.zonderStud;
+  $("#vGebied").textContent = "≥ " + S.minInw[lv] + " inw. · " + Math.round(S.minDek * 100) + "% gevuld" + (S.zonderStud ? " · zonder studenten" : "");
+  $("#stapDrempel").max = TH.length; $("#stapDrempel").value = S.stapDrempel; $("#stapDrempelW").textContent = S.stapDrempel + "/" + TH.length;
+  const A = actief();
+  $("#indTelling").textContent = A.length + " van " + IND.filter(indTelt).length;
+  $("#drempelUitleg").textContent = "Een " + ev(lv, 1) + " telt mee bij minstens " + S.minInw[lv] + " inwoners en als " + Math.round(S.minDek * 100) +
+    "% van de " + A.length + " indicatoren een cijfer heeft. CBS laat cijfers voor kleine buurten vaak weg.";
+  document.querySelectorAll("#indLijst input").forEach((c) => (c.checked = !!S.aan[+c.dataset.i]));
+}
+function bouwRail() {
+  if (OPENBAAR) { seg("#segNiveau", "niveau", () => { S.sort = { k: "score", r: -1 }; S.gekozen = null; sluitPaneel(); }); return; }
+  seg("#segBench", "bench"); seg("#segNiveau", "niveau", () => { S.sort = { k: "score", r: -1 }; S.gekozen = null; sluitPaneel(); });
+  seg("#segScore", "score"); seg("#segWeging", "weging");
+  $("#minInw").oninput = (e) => { const lv = S.ga === "gemeente" ? S.niveau : "buurt"; S.minInw[lv] = +e.target.value; $("#minInwW").textContent = e.target.value; railBijZacht(); uitgesteld(); };
+  $("#minDek").oninput = (e) => { S.minDek = +e.target.value / 100; $("#minDekW").textContent = e.target.value + "%"; railBijZacht(); uitgesteld(); };
+  $("#zonderStud").onchange = (e) => { S.zonderStud = e.target.checked; teken(); };
+  $("#stapDrempel").oninput = (e) => { S.stapDrempel = +e.target.value; $("#stapDrempelW").textContent = S.stapDrempel + "/" + TH.length; uitgesteld(); };
+  const box = $("#indLijst");
+  for (const t of TH) {
+    const d = el("div", "thema");
+    const kop = el("div", "themakop"); kop.append(document.createTextNode(t.n), el("span", "as", t.as === "bev" ? "bevolking" : "plek"));
+    const l = el("div", "indlijst");
+    IND.filter((x) => x.t === t.k).forEach((x) => {
+      const lab = el("label", "vink"); lab.title = x.n + " · " + x.bron + " " + x.jr;
+      const c = el("input"); c.type = "checkbox"; c.dataset.i = x.i; c.id = "ind_" + x.k;
+      c.onchange = () => { S.aan[x.i] = c.checked; opslag.zet("aan", S.aan); teken(); };
+      lab.append(c, el("span", null, x.kort || x.n), el("span", "jr", x.jr));
+      l.appendChild(lab);
+    });
+    d.append(kop, l); box.appendChild(d);
+  }
+  const zet = (f) => { IND.forEach((x) => { if (indTelt(x)) S.aan[x.i] = f(x); }); opslag.zet("aan", S.aan); teken(); };
+  $("#indAlles").onclick = () => zet(() => true);
+  $("#indGeenRivm").onclick = () => zet((x) => !/Gezondheidsmonitor/.test(x.bron)); // alleen de modelschattingen, niet de RIVM-metingen van groen en speelplekken
+  $("#indGeenLbm").onclick = () => zet((x) => !/Leefbaarometer/.test(x.bron));
+}
+function railBijZacht() { const lv = S.ga === "gemeente" ? S.niveau : "buurt"; $("#vGebied").textContent = "≥ " + S.minInw[lv] + " inw. · " + Math.round(S.minDek * 100) + "% gevuld" + (S.zonderStud ? " · zonder studenten" : ""); }
+let wacht = 0;
+function uitgesteld() { clearTimeout(wacht); wacht = setTimeout(teken, 140); }
+
+/* ===================== kop: gemeente zoeken, navigatie ===================== */
+function bouwKop() {
+  const inp = $("#gemZoek"), lijst = $("#gemLijst");
+  let act = -1, res = [];
+  const sluit = () => { lijst.hidden = true; act = -1; };
+  const kies = (g) => { inp.value = ""; sluit(); inp.blur(); location.hash = g.c.toLowerCase(); };
+  const toon = () => {
+    const q = norm(inp.value.trim()); lijst.innerHTML = ""; act = -1;
+    if (!q) { sluit(); return; }
+    res = GEM.map((g) => { const n = norm(g.n); return [n.startsWith(q) ? 0 : n.includes(q) ? 1 : norm(g.c).includes(q) ? 2 : 9, g]; })
+      .filter((x) => x[0] < 9).sort((a, b) => a[0] - b[0] || a[1].n.localeCompare(b[1].n, "nl")).slice(0, 12).map((x) => x[1]);
+    if (!res.length) lijst.appendChild(el("div", "leeg", "Geen gemeente gevonden. Gebruik de gemeentenaam zoals CBS die schrijft, bijvoorbeeld ‘’s-Hertogenbosch’."));
+    res.forEach((g) => { const b = el("button"); b.type = "button"; b.append(document.createTextNode(g.n), el("small", null, g.p + " · " + fmt(g.i, 0) + " inw.")); b.onmousedown = (e) => e.preventDefault(); b.onclick = () => kies(g); lijst.appendChild(b); });
+    lijst.hidden = false;
+  };
+  inp.oninput = toon; inp.onfocus = toon; inp.onblur = () => setTimeout(sluit, 120);
+  inp.onkeydown = (e) => {
+    const items = [...lijst.querySelectorAll("button")];
+    if (e.key === "ArrowDown") { e.preventDefault(); act = Math.min(items.length - 1, act + 1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); act = Math.max(0, act - 1); }
+    else if (e.key === "Enter") { e.preventDefault(); if (res[act >= 0 ? act : 0]) kies(res[act >= 0 ? act : 0]); return; }
+    else if (e.key === "Escape") { inp.value = ""; sluit(); return; } else return;
+    items.forEach((x, k) => x.classList.toggle("actief", k === act));
+  };
+  document.querySelectorAll(".nav button").forEach((b) => (b.onclick = () => {
+    const g = b.dataset.ga;
+    if (g === "gemeente") location.hash = (S.gem || GEMIDX[opslag.lees("laatsteGem", "gm0363")] || GEM[0]).c.toLowerCase();
+    else location.hash = g;
+  }));
+  // keuzevensters: één tegelijk open, dicht bij klikken ernaast of Escape
+  const keuzes = [...document.querySelectorAll("details.keuze")];
+  keuzes.forEach((d) => d.addEventListener("toggle", () => { if (d.open) keuzes.forEach((o) => { if (o !== d) o.open = false; }); }));
+  document.addEventListener("click", (e) => { if (!e.target.closest("details.keuze")) keuzes.forEach((o) => (o.open = false)); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") keuzes.forEach((o) => (o.open = false)); });
+}
+function route() {
+  const h = location.hash.replace("#", "").toLowerCase();
+  if (h && GEMIDX[h]) {
+    if (S.gem !== GEMIDX[h]) { S.gem = GEMIDX[h]; S.pick.clear(); S.alleenPick = false; S.gekozen = null; S.sort = { k: "score", r: -1 }; }
+    S.ga = "gemeente"; opslag.zet("laatsteGem", h);
+  } else if (h === "verantwoording") S.ga = "verantwoording";
+  else S.ga = "nederland";
+  sluitPaneel(); teken(); window.scrollTo(0, 0);
+}
+
+/* ===================== tekenen ===================== */
+function teken() {
+  railBij();
+  $("#navNL").setAttribute("aria-current", S.ga === "nederland");
+  $("#navGM").setAttribute("aria-current", S.ga === "gemeente");
+  $("#navV").setAttribute("aria-current", S.ga === "verantwoording");
+  $("#rail").hidden = S.ga === "verantwoording";
+  const w = $("#werk"); w.innerHTML = "";
+  if (S.ga === "nederland") tekenNL(w);
+  else if (S.ga === "gemeente") tekenGM(w);
+  else tekenV(w);
+  document.title = S.ga === "gemeente" && S.gem ? "Ongelijk Investeren Dashboard · " + S.gem.n : "Ongelijk Investeren Dashboard Nederland";
+}
+
+// inleiding: titel en uitleg links, kerncijfers als lijst rechts
+function intro(eyebrow, titel, lede, cijfers) {
+  const s = el("section", "intro");
+  const t = el("div", "titel"); t.append(el("p", "eyebrow", eyebrow), el("h1", null, titel), el("p", null, lede));
+  const dl = el("dl", "kern");
+  cijfers.forEach(([waarde, lab, sub]) => { const d = el("div"); const dt = el("dt"); dt.appendChild(el("b", null, lab)); if (sub) dt.appendChild(document.createTextNode(sub)); d.append(el("dd", null, waarde), dt); dl.appendChild(d); });
+  s.append(t, dl); return s;
+}
+function sectiekop(titel, uitleg, rechts) {
+  const k = el("div", "sectiekop"); const l = el("div"); l.appendChild(el("h2", null, titel));
+  if (uitleg) l.appendChild(el("p", null, uitleg)); k.appendChild(l); if (rechts) k.appendChild(rechts); return k;
+}
+// kaart en ranglijst lichten elkaar op
+function lichtKaart(c, aan) {
+  const p = document.querySelector('.kaart path[data-c="' + c + '"]'); if (!p) return;
+  p.classList.toggle("licht", aan); if (aan) p.parentNode.appendChild(p);
+}
+function lichtRij(c, aan) { const r = document.querySelector('.rij[data-c="' + c + '"]'); if (r) r.classList.toggle("licht", aan); }
+function kolKop(tekst, k, sortObj, cls, titel) {
+  const th = el("th", cls || ""), b = el("button", "kolknop"); b.type = "button";
+  b.textContent = tekst; if (titel) b.title = titel;
+  if (sortObj.k === k) b.appendChild(el("span", "pijl", sortObj.r < 0 ? " ↓" : " ↑"));
+  b.onclick = () => { if (sortObj.k === k) sortObj.r *= -1; else { sortObj.k = k; sortObj.r = k === "naam" || k === "p" ? 1 : -1; } teken(); };
+  th.appendChild(b); return th;
+}
+
+/* ---------- Nederland ---------- */
+function tekenNL(w) {
+  const agg = gemeenteOverzicht(), L = landelijk("buurt");
+  let inwStap = 0, inwMee = 0, nStap = 0, gemMet = 0, nDub = 0, inwDub = 0;
+  agg.forEach((a) => { inwStap += a.inwStap; inwMee += a.inwMee; nStap += a.nStap; nDub += a.nDub; inwDub += a.inwDub; if (a.nStap) gemMet++; });
+  w.appendChild(intro("Alle " + GEM.length + " gemeenten · vergeleken met heel Nederland", "Waar stapelen de ongelijkheden zich op?",
+    "Per gemeente het aandeel inwoners dat woont in een buurt die in minstens " + S.stapDrempel + " van de " + TH.length +
+      " thema's bij de zwaarste 20% van Nederland hoort. Klik een gemeente voor de buurten.",
+    [[fmt(nStap, 0), "Stapelingsbuurten", "minstens " + S.stapDrempel + " thema's in de zwaarste 20%"],
+     [fmt(inwStap, 0), "Inwoners daarin", pct(inwMee ? inwStap / inwMee : null, 1) + " van de inwoners in beeld"],
+     [fmt(nDub, 0), "Dubbele stapeling", "buurten met minstens 2 bevolkings- én 2 plekthema's zwaar · " + pct(inwMee ? inwDub / inwMee : null, 1) + " van de inwoners"],
+     [fmt(L.rows.length, 0), "Buurten in beeld", "van " + fmt(LV.buurt.length, 0) + "; de rest is te klein of te leeg"]]));
+
+  // kaart en ranglijst naast elkaar
+  const sp = el("section", "split");
+  const kk = el("div", "kader pad");
+  const kkop = el("div", "kaderkop");
+  const ks = el("select", "knop"); ks.setAttribute("aria-label", "Kleur de kaart naar");
+  ks.append(new Option("Aandeel inwoners in stapelingsbuurten", "pst"), new Option("Kwadrant", "kw"));
+  ks.value = S.nlKleur; ks.onchange = () => { S.nlKleur = ks.value; teken(); };
+  const kl = el("label", "vink"); kl.style.alignItems = "center"; kl.append(document.createTextNode("Kleur naar "), ks);
+  kkop.appendChild(kl); kk.appendChild(kkop);
+  sp.appendChild(kk); tekenNLKaart(kk, agg);
+  sp.appendChild(nlRanglijst(agg));
+  w.appendChild(sp);
+
+  // bevolking tegenover plek
+  const kw = el("section", "kader pad");
+  kw.appendChild(sectiekop("Bevolking tegenover plek", null, provSelect()));
+  tekenNLKwadrant(kw, agg);
+  w.appendChild(kw);
+
+  // tabel van gemeenten
+  const tk = el("section", "kader");
+  const tkop = el("div", "kaderkop"); tkop.style.padding = "14px 16px 0";
+  tkop.appendChild(el("h2", null, "Alle cijfers per gemeente"));
+  const filt = el("div", "vakken");
+  const ps = provSelect(); ps.id = "provFilter";
+  const kp = el("button", "knop", "Kopieer tabel"); kp.type = "button";
+  filt.append(ps, kp); tkop.appendChild(filt); tk.appendChild(tkop);
+  const wrap = el("div", "tabwrap"); const tab = el("table"); const th = el("thead"); const tr = el("tr", "r2");
+  const so = S.nlSort;
+  tr.append(kolKop("Gemeente", "naam", so, "vast"), kolKop("Provincie", "p", so), kolKop("Inwoners", "i", so),
+    kolKop("Inwoners in stapelingsbuurt", "pst", so, "", "Aandeel van de inwoners in buurten in beeld"),
+    kolKop("Stapelings­buurten", "nStap", so), kolKop("Buurten in beeld", "nMee", so),
+    kolKop("Gemiddelde score", "mz", so, "", "Inwonergewogen gemiddelde score van de buurten, tegen heel Nederland"),
+    kolKop("Bevolking", "bev", so, "smal", "Inwonergewogen gemiddelde van de buurtscores op " + themaNamen("bev")),
+    kolKop("Plek", "leef", so, "smal", "Inwonergewogen gemiddelde van de buurtscores op " + themaNamen("leef")),
+    kolKop("Verschil tussen buurten", "sd", so, "", "Spreiding van de buurtscores binnen de gemeente (inwonergewogen standaarddeviatie). Hoe hoger, hoe ongelijker de gemeente."),
+    kolKop("Zwaarste buurt", "zw", so));
+  th.appendChild(tr); tab.appendChild(th);
+  let rij = agg.filter((a) => !S.prov || a.g.p === S.prov);
+  const val = (a) => so.k === "naam" ? a.g.n : so.k === "p" ? a.g.p : so.k === "i" ? a.g.i : so.k === "zw" ? (a.zwaarst ? a.zwaarst.z : null) : a[so.k];
+  rij.sort((a, b) => { const x = val(a), y = val(b); if (typeof x === "string") return so.r * x.localeCompare(y, "nl"); if (x == null) return 1; if (y == null) return -1; return so.r * (x - y) || a.g.n.localeCompare(b.g.n, "nl"); });
+  const tb = el("tbody");
+  rij.forEach((a) => {
+    const r = el("tr"); r.onclick = () => (location.hash = a.g.c.toLowerCase());
+    r.tabIndex = 0; r.onkeydown = (e) => { if (e.key === "Enter") r.onclick(); };
+    const n = el("td", "naam vast"); n.style.left = "0"; n.append(document.createTextNode(a.g.n)); r.appendChild(n);
+    r.appendChild(el("td", "inw", a.g.p)); r.lastChild.style.textAlign = "left"; r.lastChild.style.fontWeight = "var(--gewicht-tekst)";
+    r.appendChild(el("td", "inw", fmt(a.g.i, 0)));
+    // getal in inkt op papier met een blokje in de kaartkleur ernaast: data-3 haalt met geen van beide tekstkleuren 4,5:1
+    const c1 = el("td", "cel"); const s1 = el("span", "vk"); const b1 = el("i"); b1.style.background = pstKleur(a.pst); s1.append(b1, document.createTextNode(pct(a.pst, 1))); c1.appendChild(s1); r.appendChild(c1);
+    r.appendChild(el("td", "inw", fmt(a.nStap, 0)));
+    r.appendChild(el("td", "inw", fmt(a.nMee, 0)));
+    const c2 = el("td", "cel"); const s2 = el("span", null, fz(a.mz)); const k2 = zKleur(a.mz); s2.style.background = k2.bg; s2.style.color = k2.fg; c2.appendChild(s2); r.appendChild(c2);
+    for (const z of [a.bev, a.leef]) { const c = el("td", "cel"); const sp = el("span", null, fz(z)); const kz = zKleur(z); sp.style.background = kz.bg; sp.style.color = kz.fg; c.appendChild(sp); r.appendChild(c); }
+    r.appendChild(el("td", "inw", fmt(a.sd, 2)));
+    const zw = el("td", "naam"); zw.style.fontWeight = "400"; zw.textContent = a.zwaarst ? a.zwaarst.n : "–"; r.appendChild(zw);
+    tb.appendChild(r);
+  });
+  tab.appendChild(tb); wrap.appendChild(tab); tk.appendChild(wrap); w.appendChild(tk);
+  kp.onclick = () => kopieer([["Gemeente", "Provincie", "Inwoners", "Aandeel inwoners in stapelingsbuurt", "Stapelingsbuurten", "Buurten in beeld", "Gemiddelde score", "Bevolking", "Plek", "Kwadrant", "Verschil tussen buurten", "Zwaarste buurt"]]
+    .concat(rij.map((a) => [a.g.n, a.g.p, a.g.i, a.pst == null ? "" : fmt(a.pst * 100, 1), a.nStap, a.nMee, fmt(a.mz, 2), fmt(a.bev, 2), fmt(a.leef, 2), a.kw ? KW[a.kw][0] : "", fmt(a.sd, 2), a.zwaarst ? a.zwaarst.n : ""])), kp);
+  w.appendChild(voet());
+}
+
+function tekenNLKaart(kk, agg) {
+  const leg = el("div", "legenda"); leg.style.margin = "0 0 10px";
+  if (S.nlKleur === "kw") kk.appendChild(kwLegenda());
+  else { [["geen", 0], ["< 5%", 1], ["5–15%", 2], ["15–30%", 3], ["30% of meer", 4]].forEach(([t, s]) => { const k = el("span", "kw"); const i = el("i"); i.style.background = "var(--p" + s + ")"; k.append(i, document.createTextNode(t)); leg.appendChild(k); }); kk.appendChild(leg); }
+  const kaart = el("div", "kaart"); kk.appendChild(kaart);
+  laadGeo("nl").then((geo) => {
+    if (!geo) { kaart.appendChild(el("p", "hint", "De kaart kon niet geladen worden.")); return; }
+    const svg = sv("svg", { viewBox: "0 0 " + geo.box[0] + " " + geo.box[1], role: "img", "aria-label": "Kaart van Nederland per gemeente" });
+    const per = {}; agg.forEach((a) => (per[a.g.c] = a));
+    for (const c in geo.g) {
+      const a = per[c];
+      const fill = !a ? "var(--data-geen)" : S.nlKleur === "kw" ? (a.kw ? KW[a.kw][1] : "var(--data-geen)") : pstKleur(a.pst);
+      const p = sv("path", { d: geo.g[c], class: "v", fill, "data-c": c });
+      if (a && S.prov && a.g.p !== S.prov) p.style.opacity = ".25";
+      if (a) {
+        p.onmouseenter = () => lichtRij(c, true);
+        p.onmousemove = (e) => tip(e, "<b>" + esc(a.g.n) + "</b>" + pct(a.pst, 1) + " van de inwoners in een stapelingsbuurt<br>Bevolking " + fz(a.bev) + " · plek " + fz(a.leef) + "<br><span class='r'>" + a.nStap + " van " + a.nMee + " buurten · " + esc(a.g.p) + "</span>");
+        p.onmouseleave = () => { tipWeg(); lichtRij(c, false); }; p.onclick = () => (location.hash = c.toLowerCase());
+      }
+      svg.appendChild(p);
+    }
+    kaart.appendChild(svg);
+  });
+}
+function nlRanglijst(agg) {
+  const k = el("div", "kader lijstvak");
+  const kop = el("div", "kaderkop"); kop.append(el("h2", null, "Ranglijst"), provSelect()); k.appendChild(kop);
+  k.appendChild(el("p", "hint", "Gemeenten naar het aandeel inwoners in een stapelingsbuurt. Beweeg over een naam om hem op de kaart te zien, klik voor de buurten."));
+  const l = el("div", "rlijst");
+  const rij = agg.filter((a) => a.pst != null && (!S.prov || a.g.p === S.prov))
+    .sort((a, b) => b.pst - a.pst || b.inwStap - a.inwStap || a.g.n.localeCompare(b.g.n, "nl"));
+  const max = Math.max(0.01, ...rij.map((a) => a.pst));
+  rij.forEach((a, n) => {
+    const r = el("div", "rij"); r.dataset.c = a.g.c; r.tabIndex = 0; r.setAttribute("role", "link");
+    const nm = el("div", "nm"); nm.append(document.createTextNode(a.g.n), el("small", null, a.g.p + " · " + a.nStap + " van " + a.nMee + " buurten"));
+    const b = el("div", "pbalk"); const i = el("i"); i.style.width = Math.round((a.pst / max) * 100) + "%"; b.appendChild(i);
+    r.append(el("span", "nr", n + 1), nm, b, el("span", "sc", pct(a.pst, 1)));
+    r.onclick = () => (location.hash = a.g.c.toLowerCase());
+    r.onkeydown = (e) => { if (e.key === "Enter") r.onclick(); };
+    r.onmouseenter = () => lichtKaart(a.g.c, true); r.onmouseleave = () => lichtKaart(a.g.c, false);
+    l.appendChild(r);
+  });
+  k.appendChild(l); return k;
+}
+function tekenNLKwadrant(kk, agg) {
+  kk.appendChild(kwLegenda());
+  kk.appendChild(el("p", "hint", "Per gemeente het inwonergewogen gemiddelde van de buurtscores, vergeleken met heel Nederland. Verticaal de bevolking (" + themaNamen("bev") + "), horizontaal de plek (" + themaNamen("leef") + "). Een bol is zo groot als het aantal inwoners. Een gemiddelde verbergt verschillen tussen buurten: kijk daarvoor naar de kolom ‘Verschil tussen buurten’ in de tabel."));
+  const rij = agg.filter((a) => a.bev != null && a.leef != null);
+  const maxI = Math.max(1, ...rij.map((a) => a.g.i));
+  const pts = rij.map((a) => ({ x: a.leef, y: a.bev, kw: a.kw, g: a.g.i / maxI, dim: !!S.prov && a.g.p !== S.prov, naam: a.g.n, a,
+    tip: "<b>" + esc(a.g.n) + "</b>" + esc(a.g.p) + "<br>Bevolking " + fz(a.bev) + " · plek " + fz(a.leef) + "<br>" + pct(a.pst, 0) + " van de inwoners in een stapelingsbuurt<br><span class='r'>" + fmt(a.g.i, 0) + " inwoners · klik voor de buurten</span>",
+    klik: () => (location.hash = a.g.c.toLowerCase()) }));
+  const zicht = pts.filter((p) => !p.dim);
+  // namen: de zwaarste en de lichtste, de grootste steden, en bij een provincie meer
+  const lab = new Set(zicht.slice().sort((a, b) => (b.x + b.y) - (a.x + a.y)).slice(0, S.prov ? 10 : 12));
+  zicht.slice().sort((a, b) => (a.x + a.y) - (b.x + b.y)).slice(0, S.prov ? 3 : 4).forEach((p) => lab.add(p));
+  zicht.slice().sort((a, b) => b.g - a.g).slice(0, S.prov ? 5 : 6).forEach((p) => lab.add(p));
+  const grid = el("div", "kwgrid"); kk.appendChild(grid);
+  grid.appendChild(kwadrantSvg(pts, [...lab], "Spreidingsdiagram van gemeenten: bevolking tegenover plek"));
+  const vak = el("div", "kwvakken");
+  const tel = { dubbel: [0, 0], bev: [0, 0], omg: [0, 0], geen: [0, 0] }; let tot = 0;
+  zicht.forEach((p) => { tel[p.kw][0]++; tel[p.kw][1] += p.a.g.i; tot += p.a.g.i; });
+  for (const q in KW) { const d = el("div", "kwvak"); d.style.setProperty("--c", KW[q][1]); d.append(el("b", null, KW[q][0])); d.appendChild(el("span", "num", tel[q][0] + " gemeente" + (tel[q][0] === 1 ? "" : "n") + " · " + pct(tot ? tel[q][1] / tot : null) + " van de inwoners")); vak.appendChild(d); }
+  grid.appendChild(vak);
+}
+
+/* ---------- Gemeente ---------- */
+function tekenGM(w) {
+  const g = S.gem, lv = S.niveau, R = gemeenteResultaat();
+  let inwMee = 0, inwStap = 0, nStap = 0; const kwInw = { dubbel: 0, bev: 0, omg: 0, geen: 0 };
+  let nDub = 0, inwDub = 0;
+  R.res.forEach((x, r) => { inwMee += r.i; if (x.stap != null && x.stap >= S.stapDrempel) { nStap++; inwStap += r.i; } if (x.dub) { nDub++; inwDub += r.i; } if (x.kw) kwInw[x.kw] += r.i; });
+  const L = landelijk(lv); let gz = 0, gw = 0;
+  R.mee.forEach((r) => { const x = L.res.get(r); if (x && x.tot != null) { gz += Math.max(1, r.i) * x.tot; gw += Math.max(1, r.i); } });
+  if (OPENBAAR) { const m = lv === "wijk" ? g.mzWijk : g.mz; gz = m == null ? 0 : m; gw = m == null ? 0 : 1; } // onafgerond berekend in 3_openbaar.py
+  w.appendChild(intro(g.p + " · " + fmt(g.i, 0) + " inwoners · " + STED[g.st], "De zwaarst belaste " + ev(lv, 2) + " van " + g.n,
+    R.mee.length + " van de " + R.alle.length + " " + ev(lv, 2) + " in beeld, vergeleken met " + benchNaam() + ". " + SCOREUITLEG[S.score],
+    [[fmt(nStap, 0), "Stapelings" + ev(lv, 2), "minstens " + S.stapDrempel + " van " + TH.length + " thema's in de zwaarste 20%"],
+     [pct(inwMee ? inwStap / inwMee : null, 0), "Inwoners daarin", fmt(inwStap, 0) + " inwoners"],
+     [fmt(nDub, 0), "Dubbele stapeling", "minstens 2 bevolkings- én 2 plekthema's zwaar · " + pct(inwMee ? inwDub / inwMee : null, 0) + " van de inwoners"],
+     [fz(gw ? gz / gw : null), "Gemeente tegen Nederland", "inwonergewogen gemiddelde score"]]));
+
+  // kaart en ranglijst naast elkaar
+  const sp = el("section", "split");
+  tekenKaart(sp, R); sp.appendChild(gmRanglijst(R));
+  w.appendChild(sp);
+  tekenKwadrant(w, R);
+  tekenTabel(w, R);
+  w.appendChild(voet());
+}
+function gmRanglijst(R) {
+  const k = el("div", "kader lijstvak");
+  const kop = el("div", "kaderkop");
+  kop.append(el("h2", null, "Ranglijst"), el("span", "hint", S.score === "stapel" ? "op stapeling" : S.score === "aandeel" ? "op aandeel ongunstig" : "op gemiddelde score"));
+  k.appendChild(kop);
+  k.appendChild(el("p", "hint", "De blokjes zijn de " + telwoord(TH.length) + " thema's: eerst " + telwoord(nThema("bev")) + " over de bevolking, dan " + telwoord(nThema("leef")) + " over de plek. Warm is zwaarder, koel lichter. Klik voor alle cijfers."));
+  const l = el("div", "rlijst");
+  const rows = zichtbaar(R).filter((r) => R.res.get(r).rang).sort((a, b) => R.res.get(a).rang - R.res.get(b).rang);
+  rows.forEach((r) => {
+    const x = R.res.get(r), d = el("div", "rij" + (S.pick.has(r.c) ? " gekozen" : "")); d.dataset.c = r.c; d.tabIndex = 0;
+    const nm = el("div", "nm"); nm.appendChild(document.createTextNode(r.n));
+    const sg = signalen(r); if (sg.length) { const m = el("sup", "let", "!"); m.title = sg.join("\n"); nm.appendChild(m); }
+    nm.appendChild(el("small", null, (r.lv === "buurt" && r.wn ? r.wn + " · " : "") + fmt(r.i, 0) + " inwoners"));
+    const st = el("div", "strook");
+    TH.forEach((t, j) => {
+      const i = el("i"), z = x.th[t.k];
+      if (z != null) i.style.background = zKleur(z).bg; else i.style.cssText = "background:transparent;outline:1px dashed var(--inkt-zacht);outline-offset:-1px";
+      if (j > 0 && TH[j - 1].as !== t.as) i.className = "tus";
+      i.title = t.n + ": " + fz(z); st.appendChild(i);
+    });
+    const sc = el("span", "sc", S.score === "stapel" ? (x.stap == null ? "–" : x.stap + "/" + x.stapN) : S.score === "aandeel" ? pct(x.aandeel) : fz(x.tot));
+    d.append(el("span", "nr", x.rang), nm, st, sc);
+    d.onclick = () => toonPaneel(r, R); d.onkeydown = (e) => { if (e.key === "Enter") toonPaneel(r, R); };
+    d.onmouseenter = () => lichtKaart(r.c, true); d.onmouseleave = () => lichtKaart(r.c, false);
+    l.appendChild(d);
+  });
+  if (!rows.length) { const h = el("p", "hint", "Geen " + ev(S.niveau, 2) + " die aan de drempels voldoen."); h.style.padding = "12px 16px"; l.appendChild(h); }
+  k.appendChild(l); return k;
+}
+function zichtbaar(R) {
+  let rows = R.mee.slice();
+  if (S.alleenPick && S.pick.size) rows = rows.filter((r) => S.pick.has(r.c));
+  return rows;
+}
+function scoreLegenda() {
+  const leg = el("div", "legenda");
+  if (S.score === "stapel") {
+    leg.appendChild(el("span", null, "Aantal thema's in de zwaarste 20%:"));
+    const rp = el("span", "ramp"); [0, 1, 2, 3, 4].forEach((s) => { const i = el("i"); i.style.background = "var(--p" + s + ")"; rp.appendChild(i); }); leg.append(rp, el("span", null, "0 · 1 · 2 · 3 · 4 of meer"));
+  } else {
+    leg.appendChild(el("span", null, "Ten opzichte van de vergelijking:"));
+    const rp = el("span", "ramp"); ["w5", "w4", "w3", "w2", "w1", "n0", "k1", "k2", "k3", "k4", "k5"].forEach((s) => { const i = el("i"); i.style.background = "var(--" + s + ")"; rp.appendChild(i); });
+    leg.append(rp, el("span", null, "links zwaarder · midden gemiddeld · rechts lichter"));
+  }
+  return leg;
+}
+
+/* tabel */
+function tekenTabel(w, R) {
+  const k = el("section", "kader");
+  const knoppen = el("div", "vakken");
+  if (S.pick.size) {
+    const a = el("button", "knop", S.alleenPick ? "Toon alles" : "Alleen selectie (" + S.pick.size + ")"); a.type = "button"; a.setAttribute("aria-pressed", S.alleenPick);
+    a.onclick = () => { S.alleenPick = !S.alleenPick; teken(); }; knoppen.appendChild(a);
+    const x = el("button", "knop", "Selectie wissen"); x.type = "button"; x.onclick = () => { S.pick.clear(); S.alleenPick = false; teken(); }; knoppen.appendChild(x);
+  }
+  if (!OPENBAAR) { const ti = el("button", "knop", "Indicatoren tonen"); ti.type = "button"; ti.setAttribute("aria-pressed", S.toonInd); ti.onclick = () => { S.toonInd = !S.toonInd; teken(); }; knoppen.appendChild(ti); }
+  const kp = el("button", "knop", "Kopieer tabel"); kp.type = "button"; kp.onclick = () => kopieerGM(R, kp); knoppen.appendChild(kp);
+  const kop = sectiekop("Alle cijfers per " + ev(S.niveau, 1), "Vink " + ev(S.niveau, 2) + " aan om ze te vergelijken; ze worden dan ook op de kaart en in het diagram gemarkeerd.", knoppen);
+  kop.style.padding = "16px 16px 0"; k.appendChild(kop);
+  const lg = scoreLegenda(); lg.style.padding = "10px 16px 12px"; k.appendChild(lg);
+  const wrap = el("div", "tabwrap"); const tab = el("table"); const th = el("thead");
+  const r1 = el("tr", "r1"), r2 = el("tr", "r2"), so = S.sort;
+  const leegKop = (n, cls) => { const x = el("th", cls || ""); x.colSpan = n; return x; };
+  r1.append(leegKop(1, "vast"), leegKop(1, "naam vast"), leegKop(3));
+  const tr0 = el("th", "rang vast"); tr0.appendChild(el("span", "thlab", "#")); r2.appendChild(tr0);
+  r2.append(kolKop(S.niveau === "wijk" ? "Wijk" : "Buurt", "naam", so, "naam vast"), kolKop("Inwoners", "inw", so), kolKop(S.score === "stapel" ? "Stapeling" : S.score === "aandeel" ? "Aandeel ongunstig" : "Score", "score", so), kolKop("Stapeling", "stap", so));
+  const thk = el("th"); thk.colSpan = TH.length + 2; thk.appendChild(el("span", "thlab", "Thema's · bevolking en plek")); r1.appendChild(thk);
+  r2.append(kolKop("Bevolking", "bev", so, "smal"), kolKop("Plek", "leef", so, "smal"));
+  TH.forEach((t) => r2.appendChild(kolKop(t.n, "th:" + t.k, so, "smal")));
+  const A = R.A;
+  if (S.toonInd) TH.forEach((t) => {
+    const ii = A.filter((i) => IND[i].t === t.k); if (!ii.length) return;
+    const h = el("th"); h.colSpan = ii.length; h.appendChild(el("span", "thlab", t.n)); r1.appendChild(h);
+    ii.forEach((i) => r2.appendChild(kolKop(IND[i].kort || IND[i].n, "i:" + i, so, "smal", IND[i].n + " (" + IND[i].eh + ") · " + IND[i].bron + " " + IND[i].jr)));
+  });
+  th.append(r1, r2); tab.appendChild(th);
+  const rows = zichtbaar(R);
+  const val = (r) => {
+    const x = R.res.get(r);
+    if (so.k === "naam") return r.n; if (so.k === "inw") return r.i; if (so.k === "score") return scoreVan(x); if (so.k === "stap") return x.stap;
+    if (so.k === "bev") return x.bev; if (so.k === "leef") return x.leef;
+    if (so.k.startsWith("th:")) return x.th[so.k.slice(3)];
+    if (so.k.startsWith("i:")) return x.z[+so.k.slice(2)];
+    return null;
+  };
+  // openbaar: bij gelijke afgeronde waarden eerst de volgorde van de onafgeronde score (rang0), dan de naam
+  const gelijk = (a, b) => (OPENBAAR ? (R.res.get(a).rang0 || 1e9) - (R.res.get(b).rang0 || 1e9) : 0) || a.n.localeCompare(b.n, "nl");
+  rows.sort((a, b) => { const x = val(a), y = val(b); if (typeof x === "string") return so.r * x.localeCompare(y, "nl"); if (x == null && y == null) return a.n.localeCompare(b.n, "nl"); if (x == null) return 1; if (y == null) return -1; return so.r * (x - y) || gelijk(a, b); });
+  const maxAbs = Math.max(0.5, ...rows.map((r) => Math.abs(R.res.get(r).tot || 0)));
+  const tb = el("tbody");
+  rows.forEach((r) => {
+    const x = R.res.get(r), tr = el("tr");
+    if (S.pick.has(r.c)) tr.className = "gekozen";
+    tr.onclick = () => toonPaneel(r, R); tr.tabIndex = 0; tr.onkeydown = (e) => { if (e.key === "Enter" && e.target === tr) toonPaneel(r, R); };
+    const c0 = el("td", "rang vast"); const pk = el("input"); pk.type = "checkbox"; pk.checked = S.pick.has(r.c); pk.title = "Kies om te vergelijken"; pk.setAttribute("aria-label", r.n + " kiezen");
+    pk.onclick = (e) => e.stopPropagation(); pk.onchange = () => { pk.checked ? S.pick.add(r.c) : S.pick.delete(r.c); teken(); };
+    c0.append(pk, document.createTextNode(x.rang || "")); tr.appendChild(c0);
+    const n = el("td", "naam vast"); n.appendChild(document.createTextNode(r.n)); const sg = signalen(r);
+    if (sg.length) { const m = el("sup", "let", "!"); m.title = sg.join("\n"); n.appendChild(m); }
+    if (r.lv === "buurt" && r.wn) n.appendChild(el("small", null, r.wn)); n.title = sg.length ? r.n + "\n" + sg.join("\n") : r.n; tr.appendChild(n);
+    tr.appendChild(el("td", "inw", fmt(r.i, 0)));
+    const sc = el("td", "score");
+    if (S.score === "z") {
+      const b = el("div", "sbalk"); const st = el("div", "staaf" + ((x.tot || 0) < 0 ? " goed" : "")); st.style.width = Math.round((Math.abs(x.tot || 0) / maxAbs) * 70) + "px";
+      b.append(st, el("span", "num", fz(x.tot))); sc.appendChild(b);
+    } else if (S.score === "aandeel") { const k2 = aKleur(x.aandeel); const s = el("span", "num", pct(x.aandeel)); s.style.cssText = "background:" + k2.bg + ";color:" + k2.fg + ";padding:3px 7px;border-radius:4px"; sc.appendChild(s); }
+    else sc.appendChild(stippen(x));
+    tr.appendChild(sc);
+    const st = el("td", "stap"); st.appendChild(stippen(x)); tr.appendChild(st);
+    const cel = (z) => { const c = el("td", "cel" + (z == null ? " leeg" : "")); const s = el("span", null, fz(z)); const k2 = zKleur(z); s.style.background = k2.bg; s.style.color = k2.fg; c.appendChild(s); return c; };
+    tr.append(cel(x.bev), cel(x.leef));
+    TH.forEach((t) => tr.appendChild(cel(x.th[t.k])));
+    if (S.toonInd) TH.forEach((t) => A.filter((i) => IND[i].t === t.k).forEach((i) => { const c = cel(x.z[i]); c.title = IND[i].n + ": " + fmt(r.v[i], IND[i].dec) + " " + IND[i].eh; tr.appendChild(c); }));
+    tb.appendChild(tr);
+  });
+  tab.appendChild(tb); wrap.appendChild(tab); k.appendChild(wrap);
+  if (!rows.length) k.appendChild(el("p", "hint", "Geen " + ev(S.niveau, 2) + " die aan de drempels voldoen. Verlaag het minimum aantal inwoners of het vulpercentage.")).style.padding = "16px";
+  w.appendChild(k);
+  w.appendChild(el("p", "voet", "Een ! bij de naam betekent dat de cijfers waarschijnlijk vertekend zijn, bijvoorbeeld door veel studenten of een zorgvoorziening. Beweeg erover of open de buurt voor uitleg."));
+  const weg = R.alle.length - R.mee.length;
+  if (weg > 0) w.appendChild(el("p", "voet", weg + " " + ev(S.niveau, weg) + " vallen buiten de tabel: minder dan " + S.minInw[S.niveau] + " inwoners of te weinig cijfers. Op de kaart zijn ze gearceerd."));
+}
+function stippen(x) {
+  const d = el("div", "stip");
+  for (let k = 0; k < TH.length; k++) { const i = el("i"); if (x.stap != null && k < x.stap) i.className = "aan"; d.appendChild(i); }
+  d.appendChild(el("span", "num", x.stap == null ? "–" : x.stap + "/" + x.stapN)); return d;
+}
+
+/* kwadrant */
+function tekenKwadrant(w, R) {
+  const k = el("section", "kader pad");
+  const kop = el("div", "kaderkop"); kop.appendChild(el("h2", null, "Bevolking tegenover plek")); kop.firstChild.style.fontSize = "19px";
+  const leg = el("div", "legenda"); for (const q in KW) { const s = el("span", "kw"); const i = el("i"); i.style.background = KW[q][1]; s.append(i, document.createTextNode(KW[q][0])); leg.appendChild(s); }
+  kop.appendChild(leg); k.appendChild(kop);
+  // de namen van de thema's komen uit de data (D.themas), zodat deze uitleg meeloopt met de indeling
+  const asNamen = (as) => TH.filter((t) => t.as === as).map((t) => t.n.charAt(0).toLowerCase() + t.n.slice(1));
+  const telw = (n) => ["geen", "één", "twee", "drie", "vier", "vijf", "zes", "zeven", "acht", "negen", "tien"][n] || String(n);
+  const tb = asNamen("bev"), tl = asNamen("leef");
+  k.appendChild(el("p", "hint", "Verticaal staat het gemiddelde van de " + telw(tb.length) + " thema's over de bevolking (" + tb.join(", ") + "), horizontaal dat van de " + telw(tl.length) + " thema's over de plek (" + tl.join(", ") + "). Rechtsboven ligt de opgave dubbel. Een bol is zo groot als het aantal inwoners."));
+  const rows = zichtbaar(R).filter((r) => { const x = R.res.get(r); return x.bev != null && x.leef != null; });
+  const maxI = Math.max(1, ...rows.map((r) => r.i));
+  const pts = rows.map((r) => {
+    const x = R.res.get(r);
+    return { x: x.leef, y: x.bev, kw: x.kw, g: r.i / maxI, dim: S.pick.size && !S.pick.has(r.c), naam: r.n, i: r.i,
+      tip: "<b>" + esc(r.n) + "</b>" + (r.wn ? esc(r.wn) + "<br>" : "") + "Bevolking " + fz(x.bev) + " · plek " + fz(x.leef) + "<br><span class='r'>" + fmt(r.i, 0) + " inwoners · klik voor details</span>",
+      klik: () => toonPaneel(r, R), r };
+  });
+  // namen bij de zwaarste tien (som van beide assen) en de gekozen gebieden
+  const lab = pts.slice().sort((a, b) => (b.x + b.y) - (a.x + a.y)).slice(0, 10);
+  pts.forEach((p) => { if (S.pick.has(p.r.c) && !lab.includes(p)) lab.push(p); });
+  const grid = el("div", "kwgrid"); k.appendChild(grid);
+  grid.appendChild(kwadrantSvg(pts, lab, "Spreidingsdiagram bevolking tegenover plek"));
+  const vak = el("div", "kwvakken");
+  const tel = { dubbel: [0, 0], bev: [0, 0], omg: [0, 0], geen: [0, 0] }; let tot = 0;
+  rows.forEach((r) => { const q = R.res.get(r).kw; tel[q][0]++; tel[q][1] += r.i; tot += r.i; });
+  for (const q in KW) { const d = el("div", "kwvak"); d.style.setProperty("--c", KW[q][1]); d.append(el("b", null, KW[q][0])); const s = el("span", "num", tel[q][0] + " " + ev(S.niveau, tel[q][0]) + " · " + pct(tot ? tel[q][1] / tot : null) + " van de inwoners"); d.appendChild(s); vak.appendChild(d); }
+  grid.appendChild(vak);
+  w.appendChild(k);
+}
+
+// Spreidingsdiagram: x = plek, y = bevolking, plus is zwaarder.
+// pts: {x, y, kw, g (grootte 0..1), dim, naam, tip, klik}; lab: punten die een naam krijgen.
+function kwadrantSvg(pts, lab, aria) {
+  const W = 960, H = 600, M = { t: 18, r: 18, b: 48, l: 58 };
+  let lim = 0.3; pts.forEach((p) => { if (!p.dim) lim = Math.max(lim, Math.abs(p.x), Math.abs(p.y)); });
+  const fijn = lim < 1.2;
+  lim = Math.min(KAP, fijn ? Math.ceil(lim * 10 + 0.5) / 10 : Math.ceil(lim * 4 + 0.5) / 4);
+  const sx = (v) => M.l + ((v + lim) / (2 * lim)) * (W - M.l - M.r), sy = (v) => M.t + ((lim - v) / (2 * lim)) * (H - M.t - M.b);
+  const svg = sv("svg", { viewBox: `0 0 ${W} ${H}`, class: "plot", role: "img", "aria-label": aria });
+  const vlak = (x0, y0, x1, y1, c) => svg.appendChild(sv("rect", { x: Math.min(x0, x1), y: Math.min(y0, y1), width: Math.abs(x1 - x0), height: Math.abs(y1 - y0), fill: c, opacity: 0.09 }));
+  vlak(sx(0), sy(0), sx(lim), sy(lim), "var(--kwadrant-dubbel)"); vlak(sx(-lim), sy(0), sx(0), sy(lim), "var(--kwadrant-bevolking)"); vlak(sx(0), sy(-lim), sx(lim), sy(0), "var(--kwadrant-plek)"); vlak(sx(-lim), sy(-lim), sx(0), sy(0), "var(--kwadrant-geen)");
+  const stap = lim > 2 ? 1 : lim > 1.2 ? 0.5 : lim > 0.6 ? 0.25 : 0.1, dec = stap < 0.25 ? 1 : 2;
+  for (let k = -Math.floor(lim / stap); k * stap <= lim + 1e-9; k++) {
+    const v = k * stap, nul = k === 0, t = nul ? "0" : (v > 0 ? "+" : "−") + nf(dec).format(Math.abs(v)).replace(/,?0+$/, "");
+    svg.appendChild(sv("line", { x1: sx(v), x2: sx(v), y1: M.t, y2: H - M.b, stroke: "var(--lijn)", "stroke-width": nul ? 1.6 : 0.7 }));
+    svg.appendChild(sv("line", { y1: sy(v), y2: sy(v), x1: M.l, x2: W - M.r, stroke: "var(--lijn)", "stroke-width": nul ? 1.6 : 0.7 }));
+    const tx = sv("text", { x: sx(v), y: H - M.b + 16, class: "tick", "text-anchor": "middle", fill: "var(--inkt-zacht)" }); tx.textContent = t; svg.appendChild(tx);
+    const ty = sv("text", { x: M.l - 8, y: sy(v) + 3, class: "tick", "text-anchor": "end", fill: "var(--inkt-zacht)" }); ty.textContent = t; svg.appendChild(ty);
+  }
+  const at = sv("text", { x: (M.l + W - M.r) / 2, y: H - 8, class: "astitel", "text-anchor": "middle", fill: "var(--inkt-zacht)" }); at.textContent = "Plek →  zwaarder"; svg.appendChild(at);
+  const ay = sv("text", { x: 14, y: (M.t + H - M.b) / 2, class: "astitel", "text-anchor": "middle", fill: "var(--inkt-zacht)", transform: `rotate(-90 14 ${(M.t + H - M.b) / 2})` }); ay.textContent = "Bevolking →  zwaarder"; svg.appendChild(ay);
+  const klem = (v) => Math.max(-lim, Math.min(lim, v));
+  // vaag eerst, grote bollen onder kleine
+  pts.slice().sort((a, b) => (b.dim - a.dim) || (b.g - a.g)).forEach((p) => {
+    const c = sv("circle", { cx: sx(klem(p.x)), cy: sy(klem(p.y)), r: 2.5 + Math.sqrt(p.g) * 15, class: "punt", fill: p.dim ? "var(--inkt-zacht)" : KW[p.kw][1], "fill-opacity": p.dim ? 0.12 : 0.82 });
+    c.onmousemove = (e) => tip(e, p.tip); c.onmouseleave = tipWeg; c.onclick = p.klik;
+    svg.appendChild(c);
+  });
+  lab.forEach((p) => { const t = sv("text", { x: sx(klem(p.x)) + 6 + Math.sqrt(p.g) * 15, y: sy(klem(p.y)) + 3, class: "plab" }); t.textContent = p.naam; svg.appendChild(t); });
+  return svg;
+}
+function provSelect() {
+  const ps = el("select", "knop"); ps.setAttribute("aria-label", "Filter op provincie");
+  ps.appendChild(new Option("Alle provincies", ""));
+  [...new Set(GEM.map((g) => g.p))].sort((a, b) => a.localeCompare(b, "nl")).forEach((p) => ps.appendChild(new Option(p, p)));
+  ps.value = S.prov; ps.onchange = () => { S.prov = ps.value; teken(); };
+  return ps;
+}
+function kwLegenda() { const leg = el("div", "legenda"); for (const q in KW) { const s = el("span", "kw"); const i = el("i"); i.style.background = KW[q][1]; s.append(i, document.createTextNode(KW[q][0])); leg.appendChild(s); } return leg; }
+
+/* kaart */
+const KAARTKLEUR = [["totaal", "Score"], ["bev", "Bevolking"], ["leef", "Plek"], ["stapel", "Stapeling"], ["kwad", "Kwadranten"]];
+function kaartWaarde(x) {
+  if (!x) return null;
+  const k = S.kaartKleur;
+  if (k === "totaal") return { kl: scoreKleur(x), t: S.score === "stapel" ? (x.stap == null ? "–" : x.stap + "/" + x.stapN + " thema's") : S.score === "aandeel" ? pct(x.aandeel) + " ongunstig" : "score " + fz(x.tot) };
+  if (k === "bev") return { kl: zKleur(x.bev), t: "bevolking " + fz(x.bev) };
+  if (k === "leef") return { kl: zKleur(x.leef), t: "plek " + fz(x.leef) };
+  if (k === "stapel") return { kl: sKleur(x.stap), t: x.stap == null ? "–" : x.stap + " van " + x.stapN + " thema's in de zwaarste 20%" + (x.dub ? " · dubbele stapeling" : "") };
+  if (k === "kwad") return x.kw ? { kl: { bg: KW[x.kw][1] }, t: KW[x.kw][0] } : null;
+  if (k.startsWith("th:")) { const t = TH.find((y) => y.k === k.slice(3)); return { kl: zKleur(x.th[t.k]), t: t.n + " " + fz(x.th[t.k]) }; }
+  if (k.startsWith("i:")) { const i = +k.slice(2); return { kl: zKleur(x.z[i]), t: null, i }; }
+  return null;
+}
+function tekenKaart(w, R) {
+  const k = el("section", "kader pad");
+  const kop = el("div", "kaderkop");
+  const sel = el("select", "knop"); sel.id = "kaartKleur"; sel.setAttribute("aria-label", "Kleur de kaart naar");
+  KAARTKLEUR.forEach(([v, t]) => sel.appendChild(new Option(t, v)));
+  const og = el("optgroup"); og.label = "Thema"; TH.forEach((t) => og.appendChild(new Option(t.n, "th:" + t.k))); sel.appendChild(og);
+  if (!OPENBAAR) { const oi = el("optgroup"); oi.label = "Indicator"; R.A.forEach((i) => oi.appendChild(new Option(IND[i].n, "i:" + i))); sel.appendChild(oi); }
+  if (![...sel.options].some((o) => o.value === S.kaartKleur)) S.kaartKleur = "totaal";
+  sel.value = S.kaartKleur; sel.onchange = () => { S.kaartKleur = sel.value; teken(); };
+  const lab = el("label", "vink"); lab.style.alignItems = "center"; lab.append(document.createTextNode("Kleur naar "), sel);
+  kop.appendChild(lab);
+  const leg = S.kaartKleur === "kwad" ? (() => { const l = el("div", "legenda"); for (const q in KW) { const s = el("span", "kw"); const i = el("i"); i.style.background = KW[q][1]; s.append(i, document.createTextNode(KW[q][0])); l.appendChild(s); } return l; })()
+    : S.kaartKleur === "stapel" || (S.kaartKleur === "totaal" && S.score === "stapel") ? (() => { const o = S.score; S.score = "stapel"; const l = scoreLegenda(); S.score = o; return l; })()
+    : (() => { const o = S.score; S.score = "z"; const l = scoreLegenda(); S.score = o; return l; })();
+  kop.appendChild(leg); k.appendChild(kop);
+  const kaart = el("div", "kaart"); kaart.appendChild(el("p", "laden", "Kaart laden…")); k.appendChild(kaart);
+  k.appendChild(el("p", "hint", "Klik een vlak voor alle cijfers. Gearceerd: te weinig inwoners of cijfers. " + (S.niveau === "buurt" ? "De donkere lijnen zijn de wijkgrenzen." : "")));
+  w.appendChild(k);
+  const g = S.gem;
+  laadGeo(g.c).then((geo) => {
+    if (S.gem !== g || !kaart.isConnected) return;
+    kaart.innerHTML = "";
+    if (!geo) { kaart.appendChild(el("p", "fout", "De kaartgrenzen van deze gemeente konden niet geladen worden.")); return; }
+    const svg = sv("svg", { viewBox: "0 0 " + geo.box[0] + " " + geo.box[1], role: "img", "aria-label": "Kaart van " + g.n });
+    const defs = sv("defs", {}); const pat = sv("pattern", { id: "arc", width: 6, height: 6, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" });
+    pat.append(sv("rect", { width: 6, height: 6, fill: "var(--data-geen)" }), sv("line", { x1: 0, y1: 0, x2: 0, y2: 6, stroke: "var(--data-arcering)", "stroke-width": 2.2 }));
+    defs.appendChild(pat); svg.appendChild(defs);
+    const vlakken = S.niveau === "buurt" ? geo.b : geo.w;
+    const perCode = {}; R.alle.forEach((r) => (perCode[r.c] = r));
+    for (const c in vlakken) {
+      const r = perCode[c], x = r ? R.res.get(r) : null, kw = kaartWaarde(x);
+      const p = sv("path", { d: vlakken[c], class: "v" + (r && S.pick.has(c) ? " gekozen" : ""), fill: kw && kw.kl.bg !== "transparent" ? kw.kl.bg : "url(#arc)", "data-c": c });
+      p.onmouseenter = () => lichtRij(c, true);
+      p.onmousemove = (e) => {
+        if (!r) { tip(e, "<b>" + c + "</b>geen cijfers"); return; }
+        let t = "<b>" + esc(r.n) + "</b>" + (r.wn ? esc(r.wn) + "<br>" : "");
+        if (!x) t += "Buiten beeld: " + fmt(r.i, 0) + " inwoners of te weinig cijfers";
+        else if (kw && kw.i != null) t += esc(IND[kw.i].n) + ": " + fmt(r.v[kw.i], IND[kw.i].dec) + " " + esc(IND[kw.i].eh) + " (" + fz(x.z[kw.i]) + ")";
+        else t += kw ? kw.t : "–";
+        tip(e, t + "<br><span class='r'>" + fmt(r.i, 0) + " inwoners</span>");
+      };
+      p.onmouseleave = () => { tipWeg(); lichtRij(c, false); };
+      if (r) p.onclick = (e) => { if (e.shiftKey) { S.pick.has(c) ? S.pick.delete(c) : S.pick.add(c); teken(); } else toonPaneel(r, R); };
+      svg.appendChild(p);
+    }
+    if (S.niveau === "buurt") for (const c in geo.w) svg.appendChild(sv("path", { d: geo.w[c], class: "grens" }));
+    kaart.appendChild(svg);
+  });
+}
+
+/* paneel met alle cijfers van één gebied */
+let paneelEl = null;
+function sluitPaneel() { if (paneelEl) { paneelEl.remove(); paneelEl = null; } S.gekozen = null; }
+function toonPaneel(r, R) {
+  sluitPaneel(); S.gekozen = r;
+  const x = R.res.get(r), p = el("aside", "paneel"); p.setAttribute("aria-label", "Cijfers van " + r.n);
+  const s = el("button", "sluit", "×"); s.type = "button"; s.setAttribute("aria-label", "Sluiten"); s.onclick = sluitPaneel; p.appendChild(s);
+  p.appendChild(el("h3", null, r.n));
+  p.appendChild(el("p", "meta", (r.wn ? r.wn + " · " : "") + S.gem.n + " · " + fmt(r.i, 0) + " inwoners" + (x.rang ? " · plaats " + x.rang + " van " + R.nRang : "")));
+  const kern = el("div", "pkern");
+  [["Score", fz(x.tot)], ["Stapeling", x.stap == null ? "–" : x.stap + "/" + x.stapN + (x.dub ? " · dubbel" : "")], ["Kwadrant", x.kw ? { dubbel: "beide zwaar", bev: "bevolking", omg: "plek", geen: "lichter" }[x.kw] : "–"]].forEach(([a, b]) => { const d = el("div"); d.append(el("small", null, a), el("b", null, b)); kern.appendChild(d); });
+  p.appendChild(kern);
+  const pk = el("button", "knop", S.pick.has(r.c) ? "✓ In selectie, klik om te verwijderen" : "+ Kies om te vergelijken"); pk.type = "button"; pk.style.marginTop = "8px";
+  pk.onclick = () => { S.pick.has(r.c) ? S.pick.delete(r.c) : S.pick.add(r.c); teken(); toonPaneel(r, R); }; p.appendChild(pk);
+  signalen(r).forEach((t) => { const sn = el("p", "noot let"); sn.textContent = t; p.appendChild(sn); });
+  if (OPENBAAR) { // de acht thema's, zonder indicatoren
+    p.appendChild(el("p", "noot", "Score per thema: de gemiddelde afwijking van het Nederlandse gemiddelde, in standaarddeviaties. Plus is zwaarder. Welke cijfers in een thema zitten, staat in de verantwoording."));
+    TH.forEach((t, j) => {
+      const rij = el("div", "othema"), l = el("div");
+      l.append(el("b", null, t.n), el("small", null, t.as === "bev" ? "bevolking" : "plek"));
+      const zw = el("span", "zw", x.zw[j] ? "zwaarste 20%" : "");
+      const z = el("span", "z", fz(x.th[t.k])); const kl = zKleur(x.th[t.k]); z.style.background = kl.bg; z.style.color = kl.fg;
+      rij.append(l, zw, z); p.appendChild(rij);
+    });
+    document.body.appendChild(p); paneelEl = p; s.focus(); return;
+  }
+  p.appendChild(el("p", "noot", "Waarde van dit gebied, het gemiddelde van de vergelijking (" + benchNaam().replace("het gemiddelde van ", "") + ") en de afwijking in standaarddeviaties. Plus is zwaarder."));
+  const kopR = el("div", "prij prijkop"); kopR.append(el("span", null, ""), el("span", "w", "hier"), el("span", "m", "vergel."), el("span", null, "afw."));
+  for (const t of TH) {
+    const h = el("div", "pth"); h.appendChild(document.createTextNode(t.n)); const z = el("span", "z", fz(x.th[t.k])); const kl = zKleur(x.th[t.k]); z.style.background = kl.bg; z.style.color = kl.fg; h.appendChild(z); p.appendChild(h);
+    p.appendChild(kopR.cloneNode(true));
+    IND.filter((y) => y.t === t.k).forEach((y) => {
+      const i = y.i, rij = el("div", "prij"); if (!S.aan[i]) rij.style.opacity = ".45";
+      const l = el("span", "lab", y.n); l.title = y.n + " (" + y.eh + ") · " + y.bron + " " + y.jr + (S.aan[i] ? "" : " · staat uit");
+      const mu = R.ref.m[i] == null ? null : y.log ? Math.exp(R.ref.m[i]) - (y.log || 1) : R.ref.m[i];
+      const zz = el("span", "z", fz(x.z[i])); const k2 = zKleur(x.z[i]); zz.style.background = k2.bg; zz.style.color = k2.fg;
+      rij.append(l, el("span", "w", fmt(r.v[i], y.dec)), el("span", "m", fmt(mu, y.dec)), zz);
+      p.appendChild(rij);
+    });
+  }
+  NIETMEE.forEach(([k, naam]) => {
+    const ctx = IND.filter((y) => y.t === k);
+    if (!ctx.length) return;
+    const h = el("div", "pth"); h.textContent = naam + " (telt niet mee)"; p.appendChild(h);
+    ctx.forEach((y) => { const rij = el("div", "prij"); const l = el("span", "lab", y.n); l.title = y.uitleg || y.n; rij.append(l, el("span", "w", fmt(r.v[y.i], y.dec)), el("span", "m", y.eh), el("span")); p.appendChild(rij); });
+  });
+  document.body.appendChild(p); paneelEl = p; s.focus();
+}
+
+/* ---------- verantwoording ---------- */
+function tekenV(w) {
+  const t = el("article", "tekst");
+  t.innerHTML = D.verantwoording || "";
+  w.appendChild(t);
+  const k = el("section", "kader"); const wrap = el("div", "tabwrap"); wrap.style.maxHeight = "none";
+  const tab = el("table", "vtab"); tab.innerHTML = "<thead><tr><th>Thema</th><th>Indicator</th><th>Richting</th><th>Bron en jaar</th><th>Gevuld*</th><th>Toelichting</th></tr></thead>";
+  const tb = el("tbody");
+  const vul = (i) => { if (OPENBAAR) return IND[i].vul; let n = 0, m = 0; LV.buurt.forEach((r) => { if (r.i >= 200) { m++; if (r.v[i] != null) n++; } }); return m ? n / m : null; };
+  TH.concat(NIETMEE.map(([k, n]) => ({ k, n, as: "" }))).forEach((th) => IND.filter((x) => x.t === th.k).forEach((x) => {
+    const r = el("tr");
+    const c0 = el("td"); const pl = el("span", "pil " + th.as, th.n); c0.appendChild(pl); r.appendChild(c0);
+    r.appendChild(el("td", null, x.n + " (" + x.eh + ")"));
+    r.appendChild(el("td", null, !indTelt(x) ? "telt niet mee" : x.r > 0 ? "hoog is gunstig" : "hoog is ongunstig"));
+    r.appendChild(el("td", null, x.bron + ", " + x.jr));
+    r.appendChild(el("td", "num", pct(vul(x.i))));
+    r.appendChild(el("td", null, (x.uitleg || "") + (x.log ? " Scheef verdeeld: eerst logaritmisch getransformeerd." : "")));
+    tb.appendChild(r);
+  }));
+  tab.appendChild(tb); wrap.appendChild(tab); k.appendChild(wrap); w.appendChild(k);
+  w.appendChild(el("p", "voet", "* Aandeel van de buurten met minstens 200 inwoners waarvoor het cijfer bestaat."));
+  if (D.ontbreekt) { const o = el("article", "tekst"); o.innerHTML = D.ontbreekt; w.appendChild(o); }
+  w.appendChild(voet());
+}
+
+/* ---------- overig ---------- */
+function voet() {
+  const p = el("p", "voet");
+  p.innerHTML = (OPENBAAR ? "Versie " + esc(D.openbaar.versie) + " van " + esc(D.openbaar.datum) + ". " : "") +
+    "Bronnen: " + esc(D.bronnen) + ". Gebouwd op " + esc(D.gebouwd) + " met de buurtindeling " + esc(D.indeling) + ". Alle cijfers zijn open data. Ongelijk Investeren Dashboard Nederland is een product van Bureau Ongelijk Investeren. Zie <a href='#verantwoording'>verantwoording</a>.";
+  return p;
+}
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+let tipEl = null;
+function tip(e, html) {
+  if (!tipEl) { tipEl = el("div", "tip"); document.body.appendChild(tipEl); }
+  tipEl.innerHTML = html; tipEl.hidden = false;
+  const r = tipEl.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+  tipEl.style.left = Math.max(8, x) + "px"; tipEl.style.top = Math.max(8, y) + "px";
+}
+function tipWeg() { if (tipEl) tipEl.hidden = true; }
+function laadGeo(c) {
+  if (GEO[c] !== undefined) return Promise.resolve(GEO[c]);
+  return fetch("geo/" + c + ".json?v=" + encodeURIComponent(D.gebouwd + D.versie)).then((r) => (r.ok ? r.json() : null)).catch(() => null).then((g) => (GEO[c] = g));
+}
+function kopieer(rijen, knop) {
+  const tekst = rijen.map((r) => r.map((v) => String(v == null ? "" : v).replace(/\t|\n/g, " ")).join("\t")).join("\n");
+  const klaar = (ok) => { const o = knop.textContent; knop.textContent = ok ? "Gekopieerd" : "Kopiëren lukte niet"; setTimeout(() => (knop.textContent = o), 1600); };
+  try { navigator.clipboard.writeText(tekst).then(() => klaar(true), () => klaar(false)); } catch (e) { klaar(false); }
+}
+function kopieerGM(R, knop) {
+  const A = R.A, rows = zichtbaar(R).sort((a, b) => (R.res.get(a).rang || 1e9) - (R.res.get(b).rang || 1e9));
+  const kop = ["Rang", S.niveau === "wijk" ? "Wijk" : "Buurt", "Code", "Wijk", "Inwoners", "Score", "Stapeling", "Bevolking", "Plek"].concat(TH.map((t) => t.n), A.map((i) => IND[i].n + " (" + IND[i].eh + ")"));
+  kopieer([kop].concat(rows.map((r) => { const x = R.res.get(r); return [x.rang, r.n, r.c, r.wn || "", r.i, fmt(x.tot, 2), x.stap, fmt(x.bev, 2), fmt(x.leef, 2)].concat(TH.map((t) => fmt(x.th[t.k], 2)), A.map((i) => (r.v[i] == null ? "" : fmt(r.v[i], IND[i].dec)))); })), knop);
+}
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") sluitPaneel(); });
+// Het zoekveld op de homepage van de site stuurt (ook zonder JavaScript) naar …/?gemeente=<naam>.
+// Een gemeentenaam of -code die maar bij één gemeente past, opent die gemeente (#gm…); anders staat de
+// zoekterm in het zoekveld met de lijst van kandidaten eronder.
+function zoekUitAdres() {
+  let q = "";
+  try { q = new URLSearchParams(location.search).get("gemeente") || ""; } catch (e) { return; }
+  q = q.trim(); if (!q) return;
+  const schoon = (h) => history.replaceState(null, "", location.pathname + (h ? "#" + h : location.hash));
+  if (location.hash.length > 1) { schoon(""); return; } // een gemeente in het adres gaat voor
+  const n = norm(q);
+  let g = GEM.find((x) => norm(x.n) === n || norm(x.c) === n);
+  if (!g) { const begin = GEM.filter((x) => norm(x.n).startsWith(n)); if (begin.length === 1) g = begin[0]; }
+  if (!g) { const deel = GEM.filter((x) => norm(x.n).includes(n)); if (deel.length === 1) g = deel[0]; }
+  if (g) { schoon(g.c.toLowerCase()); return; }
+  schoon("");
+  const inp = $("#gemZoek"); inp.value = q; inp.focus(); inp.dispatchEvent(new Event("input"));
+}
+
+/* ===================== start ===================== */
+if (!OPENBAAR) for (const k of ["bench", "niveau", "score", "weging"]) { const v = opslag.lees(k, null); if (v) S[k] = v; }
+// openbaar: het databestand heeft de versie in de naam van het verzoek, zodat de browser het bewaart tot er een nieuwe versie is
+fetch(OPENBAAR ? "data/themascores.json?v=" + DATAVERSIE : "data/buurtscores.json?v=" + Date.now().toString(36).slice(0, -4)).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); }).then((d) => {
+  if (OPENBAAR) bereidVoorOpenbaar(d); else bereidVoor(d);
+  bouwRail(); bouwKop();
+  zoekUitAdres();
+  window.addEventListener("hashchange", route);
+  route();
+}).catch((e) => {
+  $("#werk").innerHTML = "";
+  const f = el("div", "fout"); f.innerHTML = OPENBAAR
+    ? "<b>De cijfers konden niet geladen worden.</b><br>Controleer je internetverbinding en herlaad de pagina. Lukt het dan nog niet, probeer het later opnieuw. Melding: " + esc(e.message)
+    : "<b>De cijfers konden niet geladen worden.</b><br>Open het dashboard via de link, of lokaal met het startbestand in de map (een browser laadt geen gegevensbestanden direct van schijf). Melding: " + esc(e.message);
+  $("#werk").appendChild(f);
+});
+})();
+</script>

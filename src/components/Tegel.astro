@@ -1,0 +1,16 @@
+---
+interface Props {
+  titel: string;
+  tekst: string;
+  link: string;
+  linktekst: string;
+}
+
+const { titel, tekst, link, linktekst } = Astro.props;
+---
+
+<li class="tegel">
+  <h3>{titel}</h3>
+  <p>{tekst}</p>
+  <p class="tegel-link"><a class="verder" href={link}>{linktekst}</a></p>
+</li>

@@ -1,0 +1,42 @@
+---
+// De kaart van Helmond als drie svg-symbolen, één keer per pagina. Vlak.astro gebruikt ze.
+// Vormen: uit het huisstijlblad. Kleur per buurt: de echte stapeling uit het dashboard
+// (src/data/helmond.json, gemaakt met scripts/helmond-data.mjs).
+import helmond from '../data/helmond.json';
+
+// 0 tot en met 4: in hoeveel thema's de buurt bij de zwaarste 20% van Nederland hoort (4 = vier of meer).
+// Buurten die niet meetellen (te weinig inwoners) krijgen de lichtste kleur.
+const niveau = (stap: number | null) => (stap == null ? 0 : Math.min(stap, 4));
+const [b, h] = helmond.box;
+const box = `0 0 ${b} ${h}`;
+---
+
+<svg class="kaartsymbolen" width="0" height="0" aria-hidden="true">
+  <defs>
+    <symbol id="hm" viewBox={box} overflow="visible">
+      {helmond.buurten.map((buurt) => <path class={`l${niveau(buurt.stap)}`} d={buurt.d} />)}
+    </symbol>
+    <symbol id="hm-vorm" viewBox={box} overflow="visible">
+      <path d={helmond.vorm}></path>
+    </symbol>
+    <symbol id="hm-lijn" viewBox={box} overflow="visible">
+      <path fill="none" vector-effect="non-scaling-stroke" d={helmond.lijn}></path>
+    </symbol>
+    <filter id="korrel">
+      <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"></feTurbulence>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0"></feColorMatrix>
+    </filter>
+  </defs>
+</svg>
+
+<style is:global>
+  .kaartsymbolen {
+    position: absolute;
+  }
+
+  .l0 { fill: var(--stapeling-0); }
+  .l1 { fill: var(--stapeling-1); }
+  .l2 { fill: var(--stapeling-2); }
+  .l3 { fill: var(--stapeling-3); }
+  .l4 { fill: var(--stapeling-4); }
+</style>

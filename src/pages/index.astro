@@ -1,0 +1,222 @@
+---
+import { getEntry } from 'astro:content';
+import Basis from '../layouts/Basis.astro';
+import Knop from '../components/Knop.astro';
+import KaartSymbolen from '../components/KaartSymbolen.astro';
+import Hero from '../components/Hero.astro';
+import Stuk from '../components/Stuk.astro';
+import Staven from '../components/Staven.astro';
+import Tegels from '../components/Tegels.astro';
+import Afsluiter from '../components/Afsluiter.astro';
+import gemeenten from '../data/gemeenten.json';
+
+const pagina = await getEntry('paginas', 'home');
+if (!pagina) throw new Error('src/content/paginas/home.md ontbreekt');
+const { titel, beschrijving, kop, intro, zoekknop, vragen, gratis, tegels, herkomst, bureau, knop } = pagina.data;
+
+// Tekst met hooguit links erin: [tekst](adres). Al het andere wordt letterlijk getoond.
+const veilig = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const metLinks = (s: string) => veilig(s).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
+const themas = ['rood', 'blauw', 'groen'] as const;
+---
+
+<Basis titel={titel} beschrijving={beschrijving} thema="rood" kopOverVlak>
+  <KaartSymbolen />
+
+  <Hero kop={kop} intro={intro} thema="rood" maat="display" hoogte="hoog">
+    <form class="actie" action="/dashboard/" method="get" role="search">
+      <label class="verborgen" for="gemeente">Zoek je gemeente</label>
+      <input id="gemeente" class="zoek" name="gemeente" type="search" list="gemeenten" placeholder="Zoek je gemeente" autocomplete="off" />
+      <datalist id="gemeenten">
+        {gemeenten.map((g) => <option value={g.n} data-c={g.c.toLowerCase()} />)}
+      </datalist>
+      <button class="knop" type="submit">{zoekknop ?? 'Bekijk de kaart'}</button>
+    </form>
+  </Hero>
+
+  {
+    vragen && (
+      <section class="kader sectie" aria-labelledby="vragen-kop">
+        <h2 id="vragen-kop" class="breed-kop">{vragen.kop}</h2>
+        <p class="lood">{vragen.tekst}</p>
+        <ol class="vragen kolommen">
+          {vragen.lijst.map((v, i) => (
+            <li>
+              <Stuk thema={themas[i % 3]} />
+              <p class="cijfer rood nummer">{i + 1}</p>
+              <h3>{v.vraag}</h3>
+              <p class="antwoord">{v.tekst}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
+
+  {
+    gratis && (
+      <section class="band" aria-labelledby="gratis-kop">
+        <div class="kader sectie tweeluik">
+          <div>
+            <h2 id="gratis-kop">{gratis.kop}</h2>
+            <p class="lood">{gratis.tekst}</p>
+            <p class="actieregel">
+              <Knop href="/dashboard/">Naar het dashboard</Knop>
+            </p>
+          </div>
+          <Staven />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    tegels && (
+      <section class="kader sectie" aria-label="Aanbod">
+        <Tegels tegels={tegels} />
+      </section>
+    )
+  }
+
+  {
+    herkomst && (
+      <section class="kader sectie herkomst" aria-labelledby="herkomst-kop">
+        <h2 id="herkomst-kop" class="kop-3">{herkomst.kop}</h2>
+        <p class="lood" set:html={metLinks(herkomst.tekst)} />
+      </section>
+    )
+  }
+
+  {bureau && <Afsluiter kop={bureau.kop} tekst={metLinks(bureau.tekst)} knop={knop} />}
+</Basis>
+
+<script is:inline>
+  // Het zoekveld: een bekende gemeente opent het dashboard direct op die gemeente (/dashboard/#gm0794).
+  // Anders (en zonder JavaScript) gaat het formulier gewoon naar /dashboard/?gemeente=<invoer>; het dashboard
+  // zoekt de gemeente dan zelf op, of zet de invoer in zijn eigen zoekveld met de kandidaten eronder.
+  (function () {
+    var form = document.querySelector('.hero .actie');
+    if (!form) return;
+    var plat = function (s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); };
+    form.addEventListener('submit', function (e) {
+      var q = plat(form.elements.gemeente.value);
+      if (!q) { e.preventDefault(); window.location.href = '/dashboard/'; return; }
+      var opties = document.querySelectorAll('#gemeenten option');
+      for (var i = 0; i < opties.length; i++) {
+        if (plat(opties[i].value) === q) {
+          e.preventDefault();
+          window.location.href = '/dashboard/#' + opties[i].getAttribute('data-c');
+          return;
+        }
+      }
+    });
+  })();
+</script>
+
+<style>
+  /* ---------- Het zoekveld in de hero ---------- */
+  .actie {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .zoek {
+    height: 48px;
+    width: 100%;
+    padding: 0 22px;
+    border: 0;
+    border-radius: var(--radius-pil);
+    background: var(--veld);
+    box-shadow: var(--zweef);
+    font-size: 1rem;
+    line-height: 1.25rem;
+    color: var(--inkt);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .zoek::placeholder {
+    color: var(--inkt-zacht);
+    opacity: 1;
+  }
+
+  @media (min-width: 40rem) {
+    .actie {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .zoek {
+      width: 300px;
+    }
+  }
+
+  /* ---------- De drie vragen ---------- */
+  .breed-kop {
+    max-width: 780px;
+  }
+
+  .vragen {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-12);
+  }
+
+  .nummer {
+    margin-top: 20px;
+  }
+
+  .vragen h3 {
+    margin-top: var(--space-1);
+  }
+
+  .antwoord {
+    margin-top: 14px;
+    max-width: var(--leesbreedte);
+  }
+
+  @media (min-width: 48rem) {
+    .vragen {
+      margin-top: 64px;
+    }
+  }
+
+  /* ---------- Gratis en opdracht, met de staven ---------- */
+  .tweeluik {
+    display: grid;
+    gap: var(--space-12);
+    align-items: end;
+  }
+
+  @media (min-width: 48rem) {
+    .tweeluik {
+      grid-template-columns: 7fr 5fr;
+      gap: var(--space-6);
+    }
+
+    .tweeluik :global(.staven) {
+      justify-self: end;
+    }
+  }
+
+  /* ---------- Waar de methode vandaan komt ---------- */
+  .herkomst {
+    padding-top: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .herkomst {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    .herkomst .lood {
+      margin-top: 6px;
+    }
+  }
+</style>

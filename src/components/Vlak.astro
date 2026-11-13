@@ -1,0 +1,192 @@
+---
+// Het vlak: de stapelingskaart van Helmond in drie lagen (vaag, vorm, lijn), met korrel erover.
+// Het ontwerp is gemaakt op een vast kader (bv. 1240 x 720). Hier schaalt dat kader mee met de
+// breedte van het blok: de vervaging en de plek van de kaart blijven naar verhouding gelijk.
+// Het blok eromheen zorgt zelf voor position: relative en overflow: hidden.
+import helmond from '../data/helmond.json';
+
+interface Props {
+  /** Breedte en hoogte van het kader waarop de uitsnede is gekozen */
+  kader: [number, number];
+  /** De uitsnede: matrix(a b c d e f) op de kaart van 1000 x 684,5. Draaien mag, spiegelen niet. */
+  matrix: [number, number, number, number, number, number];
+  /** Vervaging in px op dat kader */
+  vaag?: number;
+  /** Dikte van de haarlijn in px */
+  haar?: number;
+  /** Label bij de heetste kern: 'rechts' of 'links' van de stip; 'auto' = rechts, en links zodra het rechts niet meer past. Weglaten = geen label. */
+  label?: 'rechts' | 'links' | 'auto';
+  /** Extra klasse voor de plaatsing in het blok */
+  klasse?: string;
+}
+
+const { kader, matrix, vaag = 40, haar = 1, label, klasse } = Astro.props;
+const [w, h] = kader;
+const [a, b, c, d, e, f] = matrix;
+const RUIM = 120; // ruimte rond het kader, zodat de vervaging niet op de rand wordt afgesneden
+const viewBox = `${-RUIM} ${-RUIM} ${w + 2 * RUIM} ${h + 2 * RUIM}`;
+const transform = `matrix(${matrix.join(' ')})`;
+const svgStijl = `left:${(-RUIM / w) * 100}%;top:${(-RUIM / h) * 100}%;width:${((w + 2 * RUIM) / w) * 100}%;height:${((h + 2 * RUIM) / h) * 100}%`;
+const [kb, kh] = helmond.box;
+
+// Plek van het label: het zwaartepunt van de buurt, door dezelfde matrix.
+const k = helmond.kern;
+const kx = ((a * k.x + c * k.y + e) / w) * 100;
+const ky = ((b * k.x + d * k.y + f) / h) * 100;
+---
+
+<div class:list={['vlak', klasse]} style={`aspect-ratio:${w}/${h};--vaag:${vaag};--kader:${w};--haar:${haar}px`}>
+  <svg class="vaag" viewBox={viewBox} style={svgStijl} aria-hidden="true">
+    <use href="#hm" width={kb} height={kh} transform={transform}></use>
+  </svg>
+  <svg class="vorm" viewBox={viewBox} style={svgStijl} aria-hidden="true">
+    <use href="#hm-vorm" width={kb} height={kh} transform={transform}></use>
+  </svg>
+  <svg class="lijn" viewBox={viewBox} style={svgStijl} aria-hidden="true">
+    <use href="#hm-lijn" width={kb} height={kh} transform={transform}></use>
+  </svg>
+</div>
+<svg class:list={['korrel', klasse]} aria-hidden="true"><rect width="100%" height="100%" filter="url(#korrel)"></rect></svg>
+{
+  label && (
+    <div class:list={['vlak-label', klasse]} style={`aspect-ratio:${w}/${h}`} aria-hidden="true">
+      <p class:list={['kern', label]} style={`left:${kx.toFixed(2)}%;top:${ky.toFixed(2)}%`}>
+        <i />
+        <u />
+        <span>
+          <b>{k.n}</b>
+          <em>
+            {k.stap} van {helmond.themas.length} thema's
+          </em>
+        </span>
+      </p>
+    </div>
+  )
+}
+
+<style>
+  .vlak,
+  .vlak-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .vlak {
+    container-type: inline-size;
+  }
+
+  .vlak svg {
+    position: absolute;
+    overflow: visible;
+    max-width: none;
+  }
+
+  /* 1 vaag: de stapeling per buurt. 2 vorm: de gemeente als zachte tint. 3 lijn: de buurtgrenzen als haarlijn. */
+  .vaag {
+    filter: blur(calc(var(--vaag) / var(--kader) * 100cqw)) saturate(1.2);
+  }
+
+  .vorm {
+    filter: blur(calc(var(--vaag) / var(--kader) * 30cqw));
+    mix-blend-mode: multiply;
+    opacity: var(--vlak-vorm-dekking);
+    fill: var(--stapeling-1);
+  }
+
+  .lijn {
+    stroke: var(--inkt);
+    stroke-opacity: var(--vlak-lijn-dekking);
+    stroke-width: var(--haar);
+  }
+
+  .korrel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    mix-blend-mode: multiply;
+    opacity: var(--vlak-korrel);
+    pointer-events: none;
+  }
+
+  .vlak-label {
+    z-index: 2;
+  }
+
+  .kern {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    transform: translate(-6px, -50%);
+    line-height: 1;
+    font-family: var(--font-kop);
+  }
+
+  .kern i {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--stapeling-4);
+    box-shadow: 0 0 0 3px var(--papier);
+  }
+
+  .kern u {
+    flex: none;
+    width: 26px;
+    height: 1.5px;
+    background: var(--inkt);
+    margin-left: 3px;
+  }
+
+  .kern span {
+    display: block;
+    background: var(--papier);
+    border-radius: var(--radius-sm);
+    padding: 7px 11px 6px;
+    white-space: nowrap;
+  }
+
+  .kern b {
+    display: block;
+    font-size: var(--label-maat);
+    line-height: var(--label-regel);
+    font-weight: var(--gewicht-label);
+    letter-spacing: var(--label-spatie);
+  }
+
+  .kern em {
+    display: block;
+    font-style: normal;
+    font-size: var(--cijfer-maat);
+    line-height: var(--cijfer-regel);
+    font-weight: var(--gewicht-kop);
+    color: var(--stapeling-4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kern.links {
+    flex-direction: row-reverse;
+    transform: translate(calc(-100% + 6px), -50%);
+  }
+
+  .kern.links u {
+    margin: 0 3px 0 0;
+  }
+
+  /* 'auto': onder 73,5rem past het label niet meer rechts van de stip (afgeleid, nagemeten). */
+  @media (max-width: 73.49rem) {
+    .kern.auto {
+      flex-direction: row-reverse;
+      transform: translate(calc(-100% + 6px), -50%);
+    }
+
+    .kern.auto u {
+      margin: 0 3px 0 0;
+    }
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+import '../styles/basis.css';
+import Kop from '../components/Kop.astro';
+import Voet from '../components/Voet.astro';
+import { site } from '../site.config';
+
+interface Props {
+  titel: string;
+  beschrijving: string;
+  /** false voor pagina's die niet in zoekmachines horen (bv. 404) */
+  indexeren?: boolean;
+  /** kleurstelling van de pagina */
+  thema?: 'rood' | 'blauw' | 'groen';
+  /** true = de kop ligt over het vlak van de hero */
+  kopOverVlak?: boolean;
+}
+
+const { titel, beschrijving, indexeren = true, thema = 'rood', kopOverVlak = false } = Astro.props;
+const volledigeTitel = titel === site.naam ? site.naam : `${titel} · ${site.naam}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+// De deelafbeelding (public/deel.png, gemaakt uit scripts/deel.html). Het adres moet volledig zijn.
+const deelafbeelding = new URL('/deel.png', Astro.site).href;
+---
+
+<!doctype html>
+<html lang="nl" data-theme={thema}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{volledigeTitel}</title>
+    <meta name="description" content={beschrijving} />
+    {indexeren ? <link rel="canonical" href={canonical} /> : <meta name="robots" content="noindex" />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- De huisstijl: één bestand voor site, dashboard en gemeenteprofiel. Letters staan op eigen adres. -->
+    <link rel="preload" href="/huisstijl/fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/huisstijl/tokens.css" />
+
+    <meta property="og:title" content={volledigeTitel} />
+    <meta property="og:description" content={beschrijving} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:site_name" content={site.naam} />
+    <meta property="og:image" content={deelafbeelding} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Gelijk is niet eerlijk. Ongelijk Investeren Dashboard Nederland." />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <a class="naar-inhoud" href="#inhoud">Naar de inhoud</a>
+    {site.werkversie && <div class="werkversie">Werkversie · niet gepubliceerd</div>}
+    <div class="pagina">
+      <Kop overVlak={kopOverVlak} />
+      <main id="inhoud" tabindex="-1">
+        <slot />
+      </main>
+    </div>
+    <Voet />
+  </body>
+</html>
+
+<style>
+  .pagina {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

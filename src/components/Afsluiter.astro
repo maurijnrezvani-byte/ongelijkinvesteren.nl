@@ -1,0 +1,77 @@
+---
+// Het donkere blok onderaan een pagina: een korte tekst en de knop naar het formulier,
+// met de merkstaven uitgerekt in de hoek (hoogtes uit het omslagblad).
+import Knop from './Knop.astro';
+
+interface Props {
+  kop?: string;
+  /** mag links bevatten als HTML */
+  tekst?: string;
+  knop?: { tekst: string; link: string };
+}
+
+const { kop, tekst, knop } = Astro.props;
+const rij = [96, 200, 132, 70, 236, 110, 168];
+const R = 32;
+---
+
+<section class="donker afsluiter" aria-label={kop ? undefined : 'Contact'} aria-labelledby={kop ? 'afsluiter-kop' : undefined}>
+  <svg class="merkrij" viewBox="0 0 304 300" aria-hidden="true">
+    {rij.map((h, i) => <path class={`m${(i % 3) + 1}`} d={`M${i * 40} 300V${300 - h + R}A${R} ${R} 0 0 1 ${i * 40 + 2 * R} ${300 - h + R}V300Z`} />)}
+  </svg>
+  <div class="kader sectie binnen">
+    {kop && <h2 id="afsluiter-kop">{kop}</h2>}
+    {tekst && <p class:list={[kop ? 'lood' : 'intro']} set:html={tekst} />}
+    {
+      knop && (
+        <p class="actieregel">
+          <Knop href={knop.link}>{knop.tekst}</Knop>
+        </p>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .afsluiter {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .binnen {
+    position: relative;
+    padding-bottom: calc(var(--sectie) + 150px);
+  }
+
+  .afsluiter :global(a:not(.knop)) {
+    color: var(--papier);
+  }
+
+  .merkrij {
+    position: absolute;
+    right: var(--rand);
+    bottom: 0;
+    height: 150px;
+    width: auto;
+    max-width: none;
+    isolation: isolate;
+  }
+
+  .merkrij path {
+    mix-blend-mode: screen;
+  }
+
+  .m1 { fill: var(--merk-1); }
+  .m2 { fill: var(--merk-2); }
+  .m3 { fill: var(--merk-3); }
+
+  @media (min-width: 48rem) {
+    .binnen {
+      padding-bottom: var(--sectie);
+    }
+
+    .merkrij {
+      height: min(78%, 300px);
+    }
+  }
+</style>

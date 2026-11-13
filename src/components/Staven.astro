@@ -1,0 +1,108 @@
+---
+// De ongelijke, overlappende staven met echte cijfers: hoeveel buurten van Helmond horen in
+// 0, 1, 2, 3 of 4 en meer thema's bij de zwaarste 20% van Nederland. Dezelfde kleuren als het vlak.
+// De hoogte van een staaf is evenredig met het aantal buurten.
+import helmond from '../data/helmond.json';
+
+const { verdeling, meegeteld } = helmond.cijfers;
+const B = 56;        // breedte van een staaf
+const STAP = 40;     // verspringing: de staven overlappen 16
+const H = 220;       // hoogte van de hoogste staaf
+const BOVEN = 30;    // ruimte voor het getal
+const ONDER = 28;    // ruimte voor het label
+const max = Math.max(...verdeling);
+const breedte = B + STAP * (verdeling.length - 1);
+const staven = verdeling.map((n, i) => {
+  const h = Math.max(n > 0 ? B / 2 : 0, (H * n) / max);
+  const x = i * STAP;
+  const top = BOVEN + H - h;
+  return { n, i, x, top, d: n > 0 ? `M${x} ${BOVEN + H}V${top + B / 2}A${B / 2} ${B / 2} 0 0 1 ${x + B} ${top + B / 2}V${BOVEN + H}Z` : '' };
+});
+const labels = ['0', '1', '2', '3', '4+'];
+const woorden = ['geen enkel thema', 'één thema', 'twee thema\'s', 'drie thema\'s', 'vier of meer thema\'s'];
+const omschrijving = `${helmond.gemeente.n}, ${meegeteld} buurten: ` + verdeling.map((n, i) => `${n} in ${woorden[i]}`).join(', ') + '.';
+---
+
+<figure class="staven">
+  <svg viewBox={`0 0 ${breedte} ${BOVEN + H + ONDER}`} role="img" aria-label={omschrijving}>
+    <g class="balk">
+      {staven.map((s) => s.d && <path class={`l${s.i}`} d={s.d} />)}
+    </g>
+    {
+      staven.map((s) => (
+        <text class:list={['getal', { zwaar: s.i === 4 }]} x={s.x + B / 2} y={s.top - 9} text-anchor="middle">
+          {s.n}
+        </text>
+      ))
+    }
+    {
+      staven.map((s) => (
+        <text class="as" x={s.x + B / 2} y={BOVEN + H + 20} text-anchor="middle">
+          {labels[s.i]}
+        </text>
+      ))
+    }
+  </svg>
+  <figcaption class="klein">
+    {helmond.gemeente.n}: {meegeteld} buurten, naar het aantal thema's waarin de buurt bij de zwaarste 20 procent van
+    Nederland hoort. Dashboard van {helmond.gebouwd}.
+  </figcaption>
+</figure>
+
+<style>
+  .staven {
+    max-width: 22rem;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .balk {
+    isolation: isolate;
+  }
+
+  .balk path {
+    mix-blend-mode: multiply;
+  }
+
+  /* De lichtste staaf valt bijna weg tegen de ondergrond: die krijgt een haarlijn. */
+  .balk .l0 {
+    stroke: var(--inkt);
+    stroke-opacity: 0.25;
+    stroke-width: 1;
+  }
+
+  .l0 { fill: var(--data-0); }
+  .l1 { fill: var(--data-1); }
+  .l2 { fill: var(--data-2); }
+  .l3 { fill: var(--data-3); }
+  .l4 { fill: var(--data-4); }
+
+  text {
+    font-family: var(--font-kop);
+    fill: var(--inkt);
+  }
+
+  .getal {
+    font-size: 15px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .getal.zwaar {
+    fill: var(--data-4);
+  }
+
+  .as {
+    font-size: 13px;
+    font-weight: 700;
+    fill: var(--inkt-zacht);
+  }
+
+  figcaption {
+    margin-top: var(--space-4);
+  }
+</style>

@@ -1,0 +1,124 @@
+---
+// Het rekenvoorbeeld van de OI-index als figuur: twee ongelijke staven (aandeel in de opgave,
+// aandeel in de inzet) met het teken "is niet gelijk aan" ertussen, en de index die eruit volgt.
+// De getallen komen uit de tekst van methode.md (zie methode.astro); dit is een verzonnen voorbeeld.
+// Staven in de schaal van Rood, ook op een groene pagina. De getallen staan er altijd als tekst bij.
+interface Props {
+  opgave: number;
+  inzet: number;
+}
+
+const { opgave, inzet } = Astro.props;
+const index = Math.round((inzet / opgave) * 100);
+const max = Math.max(opgave, inzet);
+const teken = index === 100 ? 'gelijk aan' : 'niet gelijk aan';
+const omschrijving = `Verzonnen voorbeeld. Aandeel in de opgave: ${opgave} procent. Aandeel in de inzet: ${inzet} procent. Die zijn ${teken} elkaar. De OI-index is ${inzet} gedeeld door ${opgave}, keer 100, is ${index}.`;
+---
+
+<figure class="rekensom" style={`--max:${max}`}>
+  <div class="beeld" role="img" aria-label={omschrijving}>
+    <div class="kolom" style={`--p:${opgave}`}>
+      <p class="cijfer getal">{opgave}%</p>
+      <div class="paal"><span class="staaf opgave"></span></div>
+      <p class="label naam">Aandeel in de opgave</p>
+    </div>
+    <svg class="teken" viewBox="0 0 48 48" aria-hidden="true">
+      <rect x="6" y="14" width="36" height="6" rx="1.5"></rect>
+      <rect x="6" y="28" width="36" height="6" rx="1.5"></rect>
+      {index !== 100 && <line x1="31" y1="5" x2="17" y2="43"></line>}
+    </svg>
+    <div class="kolom" style={`--p:${inzet}`}>
+      <p class="cijfer getal">{inzet}%</p>
+      <div class="paal"><span class="staaf inzet"></span></div>
+      <p class="label naam">Aandeel in de inzet</p>
+    </div>
+    <div class="uitkomst">
+      <p class="label">OI-index</p>
+      <p class="index">{index}</p>
+    </div>
+  </div>
+  <figcaption class="klein">
+    Een verzonnen voorbeeld: {inzet} ÷ {opgave} × 100 = {index}.
+  </figcaption>
+</figure>
+
+<style>
+  .rekensom {
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  .beeld {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--space-4);
+    align-items: end;
+    max-width: 30rem;
+  }
+
+  .kolom {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .getal {
+    color: var(--data-4);
+  }
+
+  .paal {
+    height: 200px;
+    display: flex;
+    align-items: flex-end;
+    margin-top: var(--space-2);
+    border-bottom: 1px solid var(--inkt-zacht);
+  }
+
+  .staaf {
+    display: block;
+    width: 56px;
+    height: calc(var(--p) / var(--max) * 100%);
+    border-radius: var(--radius-pil) var(--radius-pil) 0 0;
+  }
+
+  .opgave { background: var(--data-3); }
+  .inzet { background: var(--data-2); }
+
+  .naam {
+    margin-top: var(--space-2);
+    min-height: calc(2 * var(--label-regel));
+  }
+
+  /* Het teken staat halverwege de hoogste staaf. */
+  .teken {
+    width: 40px;
+    height: 40px;
+    align-self: center;
+    fill: var(--inkt);
+    stroke: var(--inkt);
+  }
+
+  .teken line {
+    stroke-width: 6;
+    stroke-linecap: round;
+  }
+
+  .uitkomst {
+    align-self: end;
+    padding-bottom: calc(2 * var(--label-regel) + var(--space-2));
+    padding-left: var(--space-2);
+  }
+
+  .index {
+    font-family: var(--font-kop);
+    font-weight: var(--gewicht-kop);
+    font-size: var(--kop-1-maat);
+    line-height: var(--kop-1-regel);
+    letter-spacing: var(--kop-1-spatie);
+    font-variant-numeric: tabular-nums;
+    color: var(--data-4);
+  }
+
+  figcaption {
+    margin-top: var(--space-4);
+  }
+</style>

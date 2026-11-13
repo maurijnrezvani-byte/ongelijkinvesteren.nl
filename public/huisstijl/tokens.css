@@ -1,0 +1,217 @@
+/* ==========================================================================
+   Huisstijl Bureau Ongelijk Investeren · tokens
+   Bron: het huisstijl-artifact, versie 4 (13 november 2026): tokens.json en de
+   bladen Huisstijl, Toepassingen en Beeldmerk. De waarden zijn daar letterlijk
+   uit overgenomen. Wat niet in de bron staat en hier is afgeleid, is gemerkt
+   met "afgeleid".
+
+   Dit is het ENIGE bestand met kleuren, letters, lettergroottes, afstanden en
+   hoekradii. De website, het dashboard en het A4-gemeenteprofiel laden alle
+   drie dit bestand. De map huisstijl/ gaat altijd als geheel mee (dit bestand
+   plus fonts/), zodat de verwijzing naar de letterbestanden blijft kloppen.
+
+   Kleurstelling kiezen: data-theme="rood" | "blauw" | "groen" op <html> of op
+   een blok. Zonder data-theme geldt Rood.
+   ========================================================================== */
+
+/* --- Letter: Bricolage Grotesque, variabel (gewicht 200-800, optische grootte 12-96).
+       Zelf gehost, open licentie (OFL, zie fonts/LICENTIE-OFL.txt). --- */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("fonts/BricolageGrotesque-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("fonts/BricolageGrotesque-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* --- Kleurstelling Rood: de openingskleur. Dashboard en gemeenteprofiel staan altijd in Rood. --- */
+:root,
+[data-theme="rood"] {
+  --papier: #fff7f1;       /* ondergrond van site, dashboard en drukwerk; nooit puur wit */
+  --vlak: #fbede4;         /* rustige vlakken op papier */
+  --inkt: #1c1418;         /* tekst, koppen, de primaire knop */
+  --inkt-zacht: #6a5a5c;   /* bijschriften, legenda's (minstens 6:1 op papier) */
+  --lijn: #ebd8cc;         /* haarlijnen; decoratief, draagt nooit betekenis */
+  --stapeling-0: #fff1e8;  /* kaart: in geen enkel thema bij de zwaarste 20% */
+  --stapeling-1: #ffc9b3;  /* kaart: één thema */
+  --stapeling-2: #ff8a66;  /* kaart: twee thema's */
+  --stapeling-3: #e23a24;  /* kaart: drie thema's; de hete kern van het vlak */
+  --stapeling-4: #8e1220;  /* kaart: vier of meer; ook rode tekst en cijfers (8,8:1 op papier) */
+  --accent: var(--stapeling-3); /* één ding per scherm, als vlak of stip; als tekst alleen op 24px of groter */
+  --merk-1: #f2b33a;       /* beeldmerk, linker staaf */
+  --merk-2: #ff9fb2;       /* beeldmerk, middelste staaf */
+  --merk-3: #e23a24;       /* beeldmerk, rechter staaf: in elke kleurstelling rood */
+  --beter: #2e6a88;        /* koele tegenkleur voor "beter dan de vergelijking"; altijd met woord of teken */
+}
+
+/* --- Kleurstelling Blauw met rood: als beeld, niet als datakaart. --- */
+[data-theme="blauw"] {
+  --papier: #f7f5f0;
+  --vlak: #eceff5;
+  --inkt: #0b1430;
+  --inkt-zacht: #4a546e;
+  --lijn: #d9dde8;
+  --stapeling-0: #e6f0ff;
+  --stapeling-1: #a9ccff;
+  --stapeling-2: #6c9bff;
+  --stapeling-3: #ff6a4d;
+  --stapeling-4: #c81e2b;  /* rode tekst: 5,2:1 op papier */
+  --accent: var(--stapeling-3); /* te licht voor tekst (2,6:1): neem stapeling-4 */
+  --merk-1: #ffd23f;
+  --merk-2: #5f8bff;
+  --merk-3: #f2402f;
+  --beter: #2747a6;
+}
+
+/* --- Kleurstelling Groen met geel en rood: als beeld, niet als datakaart. --- */
+[data-theme="groen"] {
+  --papier: #fbf6ee;
+  --vlak: #eef3e4;
+  --inkt: #10231b;
+  --inkt-zacht: #4b5d53;
+  --lijn: #d8e2d2;
+  --stapeling-0: #e3f4e6;
+  --stapeling-1: #9fe0b8;
+  --stapeling-2: #f6c453;
+  --stapeling-3: #f0703a;
+  --stapeling-4: #b3261e;  /* rode tekst: 6,1:1 op papier */
+  --accent: var(--stapeling-3); /* te licht voor tekst (2,8:1): neem stapeling-4 */
+  --merk-1: #7fd8be;
+  --merk-2: #f6c453;
+  --merk-3: #f0503a;
+  --beter: #1f7a55;
+}
+
+:root {
+  /* --- Kleuren die niet met de kleurstelling meewisselen --- */
+  --veld: #ffffff;         /* alleen het zoekveld dat boven het vervaagde vlak zweeft */
+  --zand: #e9e6e0;         /* achter voorbeelden van drukwerk; niet in het product zelf */
+
+  /* Datakaart en staafjes: altijd de schaal van Rood, ook op een blok in Blauw of Groen.
+     Alleen in Rood loopt de schaal gelijkmatig van licht naar donker. */
+  --data-0: #fff1e8;
+  --data-1: #ffc9b3;
+  --data-2: #ff8a66;
+  --data-3: #e23a24;
+  --data-4: #8e1220;
+  --data-beter: #2e6a88;
+
+  /* VOORSTEL, niet uit de huisstijl: schalen die het dashboard nodig heeft en die de huisstijl niet
+     vastlegt. Afgeleid van de stapelingsschaal (warm) en van `beter` (koel). Nagerekend op
+     kleurenblindheid (protanopie, deuteranopie, tritanopie): binnen elke schaal verschilt elke stap
+     van de volgende in lichtheid, en warm en koel blijven uit elkaar. */
+  /* Slechter dan de vergelijking, vijf stappen. Stap 4 is iets donkerder dan data-3,
+     zodat een getal in papierkleur erop leesbaar is (4,7:1). */
+  --slechter-1: #ffe0d1;
+  --slechter-2: #ffb9a0;
+  --slechter-3: #ff8a66;
+  --slechter-4: #d2301d;
+  --slechter-5: #8e1220;
+  /* Beter dan de vergelijking, vijf stappen. Altijd met een woord, teken of getal erbij. */
+  --beter-1: #dcebf2;
+  --beter-2: #a9cddc;
+  --beter-3: #6ea5bd;
+  --beter-4: #2e6a88;
+  --beter-5: #17455b;
+  --data-midden: #f3ebe4;       /* rond het gemiddelde */
+  --data-geen: #e9e6e0;         /* niet meegeteld; op de kaart met arcering */
+  --data-arcering: #cfc9c1;
+  /* Tekst op de schalen: inkt op stap 1 tot en met 3, papier op stap 4 en 5. */
+  --op-licht: #1c1418;
+  --op-donker: #fff7f1;
+  /* Kwadranten: zwaar op bevolking én plek, alleen bevolking, alleen plek, geen van beide. */
+  --kwadrant-dubbel: #8e1220;
+  --kwadrant-bevolking: #f2b33a;
+  --kwadrant-plek: #2e6a88;
+  --kwadrant-geen: #e6dcd3;
+
+  /* --- Letters: één familie voor alles. De rollen heten nog kop en tekst. --- */
+  --font-kop: "Bricolage Grotesque", Verdana, sans-serif;
+  --font-tekst: "Bricolage Grotesque", Verdana, sans-serif;
+  --gewicht-kop: 800;      /* koppen, knoppen, navigatie, cijfers */
+  --gewicht-label: 700;    /* labels, tabs, legenda */
+  --gewicht-tekst: 400;    /* lopende tekst */
+
+  /* Koppen. De bron geeft de maat op een scherm van 1240px en op telefoonbreedte (390px);
+     daartussen schaalt de maat mee met de schermbreedte (afgeleid). */
+  --display-maat: clamp(3.625rem, 10vw, 7.75rem);      /* 58px tot 124px */
+  --display-regel: 0.9;
+  --display-spatie: -0.04em;
+  --kop-1-maat: clamp(3rem, 6.4vw, 4.9375rem);         /* 79px; telefoon 48px (afgeleid) */
+  --kop-1-regel: 0.9;
+  --kop-1-spatie: -0.035em;
+  --kop-2-maat: clamp(2.125rem, 4.2vw, 3.25rem);       /* 52px; telefoon 34px (afgeleid) */
+  --kop-2-regel: 1.08;
+  --kop-2-spatie: -0.02em;
+  --kop-3-maat: clamp(1.6875rem, 3.1vw, 2.375rem);     /* 38px; telefoon 27px (afgeleid) */
+  --kop-3-regel: 1.1;
+  --kop-3-spatie: -0.02em;
+  --woordmerk-maat: 1.3125rem;                         /* 21px */
+  --woordmerk-spatie: -0.02em;
+
+  /* Interface */
+  --knop-maat: 0.9375rem;      /* 15px, regel 20px, gewicht 800 */
+  --knop-regel: 1.25rem;
+  --label-maat: 0.875rem;      /* 14px, regel 18px, gewicht 700; niet kleiner dan 11px */
+  --label-regel: 1.125rem;
+  --label-spatie: 0.01em;
+  --cijfer-maat: 0.9375rem;    /* 15px, regel 20px, gewicht 800, tabular-nums */
+  --cijfer-regel: 1.25rem;
+  --bijschrift-maat: 0.8125rem; /* 13px, regel 18px, gewicht 700 */
+
+  /* Tekst */
+  --intro-maat: clamp(1.0625rem, 0.8rem + 0.65vw, 1.25rem); /* 20px; telefoon 17px */
+  --intro-regel: 1.4;
+  --body-maat: 1.0625rem;      /* 17px */
+  --body-regel: 1.55;
+  --klein-maat: 0.875rem;      /* 14px */
+  --klein-regel: 1.45;
+
+  /* --- Afstanden --- */
+  --space-1: 4px;    /* tussen legendablokjes */
+  --space-2: 8px;    /* tussen merk en woordmerk in het klein */
+  --space-4: 16px;   /* tussen tegels, binnen kaarten */
+  --space-6: 24px;   /* kolomafstand */
+  --space-12: 48px;  /* rand van de pagina */
+  --space-20: 80px;  /* tussen secties op de site */
+  --rand: 20px;      /* rand van de pagina op telefoonbreedte (bron: 20px), vanaf 48rem: space-12 */
+  --sectie: 56px;    /* tussen secties op telefoonbreedte (afgeleid), vanaf 48rem: 88px (bron) */
+
+  /* --- Hoeken --- */
+  --radius-sm: 4px;    /* knoppen, het label op het vlak, drukwerk en tegels: bijna recht */
+  --radius-md: 14px;   /* het dashboardpaneel */
+  --radius-pil: 999px; /* het zoekveld, staafjes en de koppen van de merkstaven; niet voor knoppen */
+
+  /* --- Schaduw: alleen het zoekveld boven het vervaagde vlak --- */
+  --zweef: 0 10px 40px rgba(28, 20, 24, 0.12);
+
+  /* --- Het vervaagde vlak (de stapelingskaart) --- */
+  --vlak-vaag: 40;          /* vervaging in px op een hero van 1240px breed; schaalt mee */
+  --vlak-vorm-dekking: 0.42;
+  --vlak-lijn-dekking: 0.1;
+  --vlak-korrel: 0.26;
+
+  /* --- Indeling (afgeleid van het blad Huisstijl: 1240px breed, 12 kolommen) --- */
+  --paginabreedte: 1240px;  /* breedte van de inhoud, zonder de randen */
+  --leesbreedte: 24em;      /* de zin onder een kop (bron: max-width 24em) */
+  --tekstbreedte: 40em;     /* lopende tekst op tekstpagina's (afgeleid) */
+  --focus: 3px;             /* dikte van de focusrand (afgeleid) */
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --rand: var(--space-12);
+    --sectie: 88px;
+  }
+}

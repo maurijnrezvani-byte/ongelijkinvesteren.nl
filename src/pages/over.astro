@@ -1,0 +1,110 @@
+---
+// Over het bureau. Kleurstelling Rood. Een rustige tekstpagina in drie rijen.
+// De tekst komt uit src/content/paginas/over.md; elke tussenkop (##) wordt een rij.
+// De middelste rij (de methode en het dashboard) staat op een band, met de staven van Helmond als beeld.
+import { getEntry } from 'astro:content';
+import Basis from '../layouts/Basis.astro';
+import KaartSymbolen from '../components/KaartSymbolen.astro';
+import Hero from '../components/Hero.astro';
+import Staven from '../components/Staven.astro';
+import Afsluiter from '../components/Afsluiter.astro';
+import { secties, metPunt } from '../lib/secties';
+
+const pagina = await getEntry('paginas', 'over');
+if (!pagina) throw new Error('src/content/paginas/over.md ontbreekt');
+const { titel, beschrijving, kop, intro, knop } = pagina.data;
+const { lijst } = secties(pagina.rendered?.html);
+const opBand = (id: string) => id.startsWith('we-weten');
+const voor = lijst.slice(0, lijst.findIndex((s) => opBand(s.id)));
+const band = lijst.find((s) => opBand(s.id));
+const na = band ? lijst.slice(lijst.indexOf(band) + 1) : lijst;
+---
+
+<Basis titel={titel} beschrijving={beschrijving} thema="rood" kopOverVlak>
+  <KaartSymbolen />
+  <Hero kop={metPunt(kop)} intro={intro} thema="rood" maat="display" />
+
+  {
+    voor.length > 0 && (
+      <div class="kader sectie rijen">
+        {voor.map((s) => (
+          <section class="rij" aria-labelledby={s.id}>
+            <h2 id={s.id}>{metPunt(s.kop)}</h2>
+            <div class="inhoud" set:html={s.html} />
+          </section>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    band && (
+      <section class="band" aria-labelledby={band.id}>
+        <div class="kader sectie tweeluik">
+          <div>
+            <h2 id={band.id} class="kop-3">
+              {metPunt(band.kop)}
+            </h2>
+            <div class="inhoud lood" set:html={band.html} />
+            <p class="actieregel">
+              <a class="verder" href="/dashboard/">
+                Naar het dashboard
+              </a>
+            </p>
+          </div>
+          <Staven />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    na.length > 0 && (
+      <div class="kader sectie rijen">
+        {na.map((s) => (
+          <section class="rij" aria-labelledby={s.id}>
+            <h2 id={s.id}>{metPunt(s.kop)}</h2>
+            <div class="inhoud" set:html={s.html} />
+          </section>
+        ))}
+      </div>
+    )
+  }
+
+  <Afsluiter tekst="Een halfuur meedenken over de vraag of dit iets voor je gemeente is, kost niets." knop={knop} />
+</Basis>
+
+<style>
+  /* Op telefoonbreedte duwt de lange intro de kop omhoog, tot onder het label bij de heetste kern.
+     Daar laten we het label weg; op bredere schermen staat het er wel. */
+  :global(.hero .vlak-label.smal) {
+    display: none;
+  }
+
+  .tweeluik {
+    display: grid;
+    gap: var(--space-12);
+    align-items: end;
+  }
+
+  .tweeluik .lood {
+    max-width: 32em;
+  }
+
+  /* Op telefoonbreedte is het beeld een bijzaak bij de tekst: kleiner houden (afgeleid). */
+  .tweeluik :global(.staven) {
+    max-width: 15rem;
+  }
+
+  @media (min-width: 48rem) {
+    .tweeluik {
+      grid-template-columns: 7fr 5fr;
+      gap: var(--space-6);
+    }
+
+    .tweeluik :global(.staven) {
+      justify-self: end;
+      max-width: 22rem;
+    }
+  }
+</style>

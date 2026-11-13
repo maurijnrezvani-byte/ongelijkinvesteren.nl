@@ -1,0 +1,108 @@
+---
+// Het programma van de masterclass als ongelijke staven met echte cijfers: de hoogte van een
+// staaf is evenredig met het aantal minuten. De blokken komen uit de Markdown
+// ("**Start, 15 minuten.** ..."), niet uit deze component. De staven zijn beeld; de minuten
+// staan er als tekst bij, dus de lijst leest ook zonder de staven.
+interface Blok {
+  naam: string;
+  minuten: number;
+  html: string;
+}
+interface Props {
+  blokken: Blok[];
+}
+
+const { blokken } = Astro.props;
+const max = Math.max(...blokken.map((b) => b.minuten));
+const totaal = blokken.reduce((som, b) => som + b.minuten, 0);
+// Kleur uit de schaal van Rood: hoe langer het blok, hoe donkerder (de minuten staan er altijd bij).
+const stap = (min: number) => (min >= 25 ? 3 : min >= 15 ? 2 : 1);
+---
+
+<ol class="programma" style={`--max:${max}`}>
+  {
+    blokken.map((b) => (
+      <li style={`--min:${b.minuten}`}>
+        <div class="paal" aria-hidden="true">
+          <span class:list={['staaf', `d${stap(b.minuten)}`]} />
+        </div>
+        <p class="cijfer minuten">{b.minuten} minuten</p>
+        <h3 class="naam">{b.naam}.</h3>
+        <div class="klein uitleg" set:html={b.html} />
+      </li>
+    ))
+  }
+</ol>
+<p class="klein som">Samen {totaal} minuten.</p>
+
+<style>
+  .programma {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  /* Telefoon: liggende staven, de lengte evenredig met de minuten. */
+  .paal {
+    display: flex;
+    border-left: 1px solid var(--inkt-zacht);
+  }
+
+  .staaf {
+    display: block;
+    height: 28px;
+    width: calc(var(--min) / var(--max) * 100%);
+    border-radius: 0 var(--radius-pil) var(--radius-pil) 0;
+  }
+
+  .d1 { background: var(--data-1); }
+  .d2 { background: var(--data-2); }
+  .d3 { background: var(--data-3); }
+
+  .minuten {
+    margin-top: var(--space-2);
+    color: var(--data-4);
+  }
+
+  .naam {
+    font-size: var(--intro-maat);
+    line-height: var(--kop-3-regel);
+    letter-spacing: var(--kop-3-spatie);
+    margin-top: var(--space-1);
+  }
+
+  .uitleg {
+    margin-top: var(--space-2);
+    color: var(--inkt);
+  }
+
+  .som {
+    margin-top: var(--space-6);
+  }
+
+  /* Breed: zes staande staven naast elkaar op één grondlijn. */
+  @media (min-width: 62rem) {
+    .programma {
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--space-6);
+    }
+
+    .paal {
+      height: calc(var(--max) * 10px);
+      align-items: flex-end;
+      border-left: 0;
+      border-bottom: 1px solid var(--inkt-zacht);
+    }
+
+    .staaf {
+      width: 56px;
+      height: calc(var(--min) * 10px);
+      border-radius: var(--radius-pil) var(--radius-pil) 0 0;
+    }
+
+    .minuten {
+      margin-top: var(--space-4);
+    }
+  }
+</style>

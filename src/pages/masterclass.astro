@@ -1,0 +1,153 @@
+---
+// Masterclass: negentig minuten in zes blokken, vier vragen als treden, en wat er verder kan.
+// Kleurstelling Groen (vraag 3, hoe kan het eerlijker?).
+// De tekst komt uit src/content/paginas/masterclass.md. Elke tussenkop (##) wordt een sectie;
+// de vorm volgt uit de inhoud, zodat de volgorde en de tekst in de Markdown blijven:
+// - een lijst met "**Naam, 15 minuten.**" wordt het programma met staven;
+// - een genummerde lijst zonder vetgedrukte kopjes wordt de treden;
+// - alinea's die met een vetgedrukt kopje beginnen, worden onderdelen naast elkaar;
+// - al het andere wordt een rij (kop links, tekst rechts).
+import { getEntry } from 'astro:content';
+import Basis from '../layouts/Basis.astro';
+import KaartSymbolen from '../components/KaartSymbolen.astro';
+import Hero from '../components/Hero.astro';
+import Afsluiter from '../components/Afsluiter.astro';
+import McProgramma from '../components/McProgramma.astro';
+import McTreden from '../components/McTreden.astro';
+import { secties, metPunt, type Sectie } from '../lib/secties';
+
+const pagina = await getEntry('paginas', 'masterclass');
+if (!pagina) throw new Error('src/content/paginas/masterclass.md ontbreekt');
+const { titel, beschrijving, kop, intro, knop } = pagina.data;
+const { lijst } = secties(pagina.rendered?.html);
+
+const programma = (html: string) =>
+  [...html.matchAll(/<li>\s*<strong>([^<]+?),\s*(\d+)\s*minuten\.?\s*<\/strong>\s*([\s\S]*?)<\/li>/g)].map((m) => ({
+    naam: m[1].trim(),
+    minuten: Number(m[2]),
+    html: m[3].trim(),
+  }));
+
+const treden = (html: string) => {
+  const ol = html.match(/<ol>([\s\S]*?)<\/ol>/);
+  if (!ol || /<strong>/.test(ol[1])) return null;
+  const vragen = [...ol[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1].trim());
+  return vragen.length > 1 ? { vragen, rest: html.replace(ol[0], '').trim() } : null;
+};
+
+const onderdelen = (html: string) => {
+  const re = /<p>\s*<strong>([^<]+)<\/strong>\s*([\s\S]*?)<\/p>/g;
+  const lijst = [...html.matchAll(re)].map((m) => ({ kop: m[1].trim(), html: m[2].trim() }));
+  const rest = html.replace(re, '').trim();
+  return lijst.length > 1 ? { lijst, rest } : null;
+};
+
+type Blok =
+  | { soort: 'rijen'; lijst: Sectie[] }
+  | { soort: 'programma'; s: Sectie; blokken: ReturnType<typeof programma> }
+  | { soort: 'treden'; s: Sectie; vragen: string[]; rest: string }
+  | { soort: 'onderdelen'; s: Sectie; lijst: { kop: string; html: string }[]; rest: string };
+
+const indeling: Blok[] = [];
+for (const s of lijst) {
+  const p = programma(s.html);
+  const t = treden(s.html);
+  const o = onderdelen(s.html);
+  if (p.length > 1) indeling.push({ soort: 'programma', s, blokken: p });
+  else if (t) indeling.push({ soort: 'treden', s, ...t });
+  else if (o) indeling.push({ soort: 'onderdelen', s, ...o });
+  else {
+    const vorige = indeling.at(-1);
+    if (vorige?.soort === 'rijen') vorige.lijst.push(s);
+    else indeling.push({ soort: 'rijen', lijst: [s] });
+  }
+}
+---
+
+<Basis titel={titel} beschrijving={beschrijving} thema="groen" kopOverVlak>
+  <KaartSymbolen />
+  <Hero kop={metPunt(kop)} intro={intro} thema="groen" maat="display" />
+
+  {
+    indeling.map((b) => {
+      if (b.soort === 'rijen')
+        return (
+          <div class="kader sectie rijen">
+            {b.lijst.map((s) => (
+              <section class="rij" aria-labelledby={s.id}>
+                <h2 id={s.id}>{metPunt(s.kop)}</h2>
+                <div class="inhoud" set:html={s.html} />
+              </section>
+            ))}
+          </div>
+        );
+      if (b.soort === 'programma')
+        return (
+          <section class="kader sectie" aria-labelledby={b.s.id}>
+            <h2 id={b.s.id} class="sectiekop">{metPunt(b.s.kop)}</h2>
+            <McProgramma blokken={b.blokken} />
+          </section>
+        );
+      if (b.soort === 'treden')
+        return (
+          <section class="kader sectie" aria-labelledby={b.s.id}>
+            <h2 id={b.s.id} class="sectiekop">{metPunt(b.s.kop)}</h2>
+            <McTreden vragen={b.vragen} />
+            {b.rest && <div class="lood na-treden" set:html={b.rest} />}
+          </section>
+        );
+      return (
+        <section class="band" aria-labelledby={b.s.id}>
+          <div class="kader sectie">
+            <h2 id={b.s.id} class="sectiekop">{metPunt(b.s.kop)}</h2>
+            {b.rest && <div class="lood" set:html={b.rest} />}
+            <div class="onderdelen">
+              {b.lijst.map((o) => (
+                <div>
+                  <h3>{metPunt(o.kop)}</h3>
+                  <div class="inhoud" set:html={o.html} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <Afsluiter tekst="Een halfuur meedenken over de vraag of dit iets voor je gemeente is, kost niets." knop={knop} />
+</Basis>
+
+<style>
+  /* Telefoon: in Groen ligt het label bij de kern op de hoogte van een kop van drie regels.
+
+  /* Twee secties na elkaar op papier: geen dubbele witruimte. */
+  .sectie + .sectie {
+    padding-top: 0;
+  }
+
+  .sectiekop {
+    max-width: 14em;
+    margin-bottom: var(--space-12);
+  }
+
+  .na-treden {
+    margin-top: var(--space-6);
+  }
+
+  .onderdelen {
+    display: grid;
+    gap: var(--space-12) var(--space-6);
+  }
+
+  .onderdelen .inhoud {
+    margin-top: var(--space-4);
+    max-width: var(--leesbreedte);
+  }
+
+  @media (min-width: 48rem) {
+    .onderdelen {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

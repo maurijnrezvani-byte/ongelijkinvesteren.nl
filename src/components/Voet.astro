@@ -1,0 +1,122 @@
+---
+import { site, ingevuld } from '../site.config';
+import Beeldmerk from './Beeldmerk.astro';
+
+const jaar = new Date().getFullYear();
+// Zolang een gegeven nog niet is ingevuld, staat het niet in de voet.
+const gegevens = [
+  { naam: 'Adres', waarde: site.adres },
+  { naam: 'Telefoon', waarde: site.telefoon },
+  { naam: 'KvK', waarde: site.kvk },
+  { naam: 'Btw-id', waarde: site.btw },
+].filter((g) => ingevuld(g.waarde));
+---
+
+<footer class="voet">
+  <div class="kader voet-binnen">
+    <div class="voet-merk">
+      <p class="woordmerk">
+        <Beeldmerk stand={3} hoogte={23} />
+        <span>{site.bureau}</span>
+      </p>
+      <p class="klein">Beheert het Ongelijk Investeren Dashboard Nederland.</p>
+    </div>
+    <div class="voet-contact">
+      <p><a href={`mailto:${site.mail}`}>{site.mail}</a></p>
+      {
+        ingevuld(site.linkedin) && (
+          <p>
+            <a href={site.linkedin}>LinkedIn</a>
+          </p>
+        )
+      }
+      {
+        gegevens.length > 0 && (
+          <dl class="gegevens">
+            {gegevens.map((g) => (
+              <div>
+                <dt>{g.naam}</dt>
+                <dd>{g.waarde}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+    </div>
+    <ul class="voet-links">
+      <li><a href="/colofon/">Colofon</a></li>
+      <li><a href="/privacy/">Privacy</a></li>
+      <li class="jaar">© {jaar} {site.bureau}</li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .voet {
+    border-top: 1px solid var(--lijn);
+    font-size: var(--klein-maat);
+    line-height: var(--klein-regel);
+  }
+
+  .voet-binnen {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-12);
+  }
+
+  .woordmerk {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-kop);
+    font-weight: var(--gewicht-kop);
+    font-size: 1.125rem;
+    letter-spacing: var(--woordmerk-spatie);
+    line-height: 1;
+  }
+
+  .voet-merk .klein {
+    margin-top: var(--space-2);
+    max-width: 22em;
+  }
+
+  .gegevens {
+    margin-top: var(--space-2);
+    color: var(--inkt-zacht);
+  }
+
+  .gegevens div {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .gegevens dt {
+    min-width: 5rem;
+  }
+
+  .gegevens dd {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .voet-links {
+    list-style: none;
+    padding: 0;
+  }
+
+  .voet a {
+    display: inline-block;
+    padding-block: 2px;
+  }
+
+  .jaar {
+    margin-top: var(--space-2);
+    color: var(--inkt-zacht);
+  }
+
+  @media (min-width: 48rem) {
+    .voet-binnen {
+      grid-template-columns: 5fr 4fr 3fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

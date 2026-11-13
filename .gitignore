@@ -1,0 +1,13 @@
+# afhankelijkheden
+node_modules/
+
+# gebouwde site en Astro-cache
+dist/
+.astro/
+
+# omgevingsvariabelen
+.env
+.env.*
+
+# macOS
+.DS_Store

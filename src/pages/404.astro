@@ -1,0 +1,46 @@
+---
+import Basis from '../layouts/Basis.astro';
+import Knop from '../components/Knop.astro';
+---
+
+<Basis titel="Pagina niet gevonden" beschrijving="Deze pagina bestaat niet (meer)." indexeren={false}>
+  <section class="kader sectie niet-gevonden">
+    <!-- Het teken ≠ als beeld: twee balken met een schuine streep, in de merkkleuren -->
+    <svg class="teken" viewBox="0 0 160 120" width="160" height="120" role="img" aria-label="Het teken voor ongelijk: twee balken met een schuine streep">
+      <rect x="0" y="26" width="128" height="22" fill="var(--merk-1)" />
+      <rect x="0" y="72" width="128" height="22" fill="var(--merk-2)" />
+      <path d="M96 0H124L64 120H36Z" fill="var(--merk-3)" style="mix-blend-mode: multiply" />
+    </svg>
+    <h1 class="kop-groot">Pagina niet gevonden.</h1>
+    <p class="intro">Deze pagina bestaat niet, of is verplaatst. Controleer het adres of ga terug naar de homepage.</p>
+    <p><Knop href="/">Naar de homepage</Knop></p>
+  </section>
+</Basis>
+
+<style>
+  .niet-gevonden {
+    padding-block: var(--space-20);
+  }
+
+  .niet-gevonden > * + * {
+    margin-top: var(--space-6);
+  }
+
+  .teken {
+    display: block;
+    width: 120px;
+    height: auto;
+    margin-bottom: var(--space-12);
+  }
+
+  .kop-groot {
+    font-size: var(--kop-1-maat);
+    line-height: var(--kop-1-regel);
+    letter-spacing: var(--kop-1-spatie);
+    text-wrap: balance;
+  }
+
+  .niet-gevonden > p:last-child {
+    margin-top: var(--space-12);
+  }
+</style>

@@ -1,0 +1,19 @@
+---
+import Tegel from './Tegel.astro';
+
+interface Props {
+  tegels?: { titel: string; tekst: string; link: string; linktekst: string }[];
+}
+
+const { tegels = [] } = Astro.props;
+---
+
+{
+  tegels.length > 0 && (
+    <ul class="tegels">
+      {tegels.map((t) => (
+        <Tegel {...t} />
+      ))}
+    </ul>
+  )
+}

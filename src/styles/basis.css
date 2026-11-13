@@ -1,0 +1,417 @@
+/* Basisopmaak van de site. Gebruikt uitsluitend variabelen uit /huisstijl/tokens.css. */
+
+/* --- Reset --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body,
+h1, h2, h3, h4,
+p, ul, ol, figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+img,
+svg,
+video,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* --- Typografie --- */
+body {
+  background: var(--papier);
+  color: var(--inkt);
+  font-family: var(--font-tekst);
+  font-size: var(--body-maat);
+  font-weight: var(--gewicht-tekst);
+  line-height: var(--body-regel);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-theme] {
+  color: var(--inkt);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-kop);
+  font-weight: var(--gewicht-kop);
+  color: inherit;
+}
+
+h1, .kop-1 { font-size: var(--kop-1-maat); line-height: var(--kop-1-regel); letter-spacing: var(--kop-1-spatie); }
+h2, .kop-2 { font-size: var(--kop-2-maat); line-height: var(--kop-2-regel); letter-spacing: var(--kop-2-spatie); text-wrap: balance; }
+h3, .kop-3 { font-size: var(--kop-3-maat); line-height: var(--kop-3-regel); letter-spacing: var(--kop-3-spatie); text-wrap: balance; }
+.display { font-size: var(--display-maat); line-height: var(--display-regel); letter-spacing: var(--display-spatie); }
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-thickness: 3px;
+}
+
+.intro {
+  font-size: var(--intro-maat);
+  line-height: var(--intro-regel);
+  max-width: var(--leesbreedte);
+  text-wrap: pretty;
+}
+
+.klein {
+  font-size: var(--klein-maat);
+  line-height: var(--klein-regel);
+  color: var(--inkt-zacht);
+}
+
+.label {
+  font-family: var(--font-kop);
+  font-size: var(--label-maat);
+  line-height: var(--label-regel);
+  font-weight: var(--gewicht-label);
+  letter-spacing: var(--label-spatie);
+}
+
+.cijfer {
+  font-family: var(--font-kop);
+  font-size: var(--cijfer-maat);
+  line-height: var(--cijfer-regel);
+  font-weight: var(--gewicht-kop);
+  font-variant-numeric: tabular-nums;
+}
+
+.rood {
+  color: var(--stapeling-4);
+}
+
+/* Tekstlink met pijl, in de letter van de knoppen */
+.verder {
+  display: inline-block;
+  padding-block: 3px;
+  font-family: var(--font-kop);
+  font-size: var(--knop-maat);
+  line-height: var(--knop-regel);
+  font-weight: var(--gewicht-kop);
+}
+
+.verder::after {
+  content: " \2192";
+}
+
+/* Lopende tekst uit Markdown */
+.inhoud {
+  max-width: var(--tekstbreedte);
+}
+
+.inhoud > * + * {
+  margin-top: var(--space-4);
+}
+
+.inhoud h2 {
+  font-size: var(--kop-3-maat);
+  line-height: var(--kop-3-regel);
+  letter-spacing: var(--kop-3-spatie);
+  margin-top: var(--space-12);
+}
+
+.inhoud h3 {
+  font-size: 1.375rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: var(--space-6);
+}
+
+.inhoud ul,
+.inhoud ol {
+  padding-left: var(--space-6);
+}
+
+.inhoud li + li {
+  margin-top: var(--space-2);
+}
+
+.inhoud strong {
+  font-weight: var(--gewicht-label);
+}
+
+/* --- Toegankelijkheid --- */
+:focus-visible {
+  outline: var(--focus) solid var(--inkt);
+  outline-offset: 3px;
+}
+
+.donker :focus-visible {
+  outline-color: var(--papier);
+}
+
+.naar-inhoud {
+  position: absolute;
+  left: var(--rand);
+  top: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--inkt);
+  color: var(--papier);
+  border-radius: var(--radius-sm);
+  transform: translateY(-300%);
+}
+
+.naar-inhoud:focus {
+  transform: none;
+}
+
+.verborgen {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Indeling --- */
+.kader {
+  width: 100%;
+  max-width: calc(var(--paginabreedte) + 2 * var(--rand));
+  margin-inline: auto;
+  padding-inline: var(--rand);
+}
+
+.sectie {
+  padding-block: var(--sectie);
+}
+
+main {
+  flex: 1;
+}
+
+/* Donker blok: inkt als ondergrond, papier als tekst */
+.donker {
+  background: var(--inkt);
+  color: var(--papier);
+}
+
+/* Werkversiebalk */
+.werkversie {
+  background: var(--inkt);
+  color: var(--papier);
+  font-size: var(--bijschrift-maat);
+  line-height: 1.4;
+  font-weight: var(--gewicht-label);
+  text-align: center;
+  padding: var(--space-1) var(--rand);
+}
+
+/* Formulier (contactpagina) */
+.formulier iframe {
+  width: 100%;
+  min-height: 32rem;
+  border: 0;
+}
+
+/* --- Tegels: rustige vlakken, bijna recht --- */
+.tegels {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.tegel {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 28px 24px;
+  background: var(--vlak);
+  border-radius: var(--radius-sm);
+}
+
+/* De kop van een tegel past altijd op de breedte van de tegel: een lang woord als
+   "Investeringsscan" breekt niet af (afgeleid; op 1240px is de kop 37px, bron 38px). */
+.tegel {
+  container-type: inline-size;
+}
+
+.tegel h3 {
+  font-size: min(var(--kop-3-maat), 12cqi);
+  hyphens: auto;
+}
+
+.tegel p {
+  margin-top: 14px;
+}
+
+.tegel .tegel-link {
+  margin-top: auto;
+  padding-top: 28px;
+}
+
+@media (min-width: 48rem) {
+  .tegels {
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-6);
+  }
+}
+
+/* --- Tekstpagina's (voorlopige opmaak; krijgen in stap 2 hun eigen indeling) --- */
+.pagina-kop {
+  padding-top: var(--space-12);
+}
+
+.pagina-kop .intro {
+  margin-top: var(--space-6);
+  max-width: 32em;
+}
+
+.pagina-inhoud > * + * {
+  margin-top: var(--space-12);
+}
+
+/* --- Bouwstenen voor pagina's --- */
+
+/* De zin onder een kop, en de regel met een knop */
+.lood {
+  margin-top: 22px;
+  max-width: var(--leesbreedte);
+  text-wrap: pretty;
+}
+
+.actieregel {
+  margin-top: 28px;
+}
+
+/* Een rij: de tussenkop links, de tekst rechts, met een haarlijn erboven */
+.rij {
+  display: grid;
+  gap: var(--space-4);
+  padding-block: var(--space-12);
+  border-top: 1px solid var(--lijn);
+}
+
+.rij > h2 {
+  font-size: var(--kop-3-maat);
+  line-height: var(--kop-3-regel);
+  letter-spacing: var(--kop-3-spatie);
+}
+
+.rijen > .rij:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.rijen > .rij:last-child {
+  padding-bottom: 0;
+}
+
+@media (min-width: 48rem) {
+  .rij {
+    grid-template-columns: 5fr 7fr;
+    gap: var(--space-6);
+    padding-block: 64px;
+  }
+}
+
+/* Een rustig vlak om iets bij elkaar te houden */
+.paneel {
+  padding: 28px;
+  background: var(--vlak);
+  border-radius: var(--radius-sm);
+}
+
+/* Drie kolommen naast elkaar, op telefoonbreedte onder elkaar */
+.kolommen {
+  display: grid;
+  gap: var(--space-12) var(--space-6);
+}
+
+@media (min-width: 48rem) {
+  .kolommen {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Een volle band in de vlakkleur */
+.band {
+  background: var(--vlak);
+}
+
+/* --- Knop: bijna recht, in inkt met papier-tekst. Ook gebruikt in de kop (Contact, Menu). --- */
+.knop {
+  display: inline-block;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--inkt);
+  color: var(--papier);
+  font-family: var(--font-kop);
+  font-size: var(--knop-maat);
+  line-height: var(--knop-regel);
+  font-weight: var(--gewicht-kop);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.knop.rand {
+  background: var(--papier);
+  color: var(--inkt);
+  box-shadow: inset 0 0 0 1.5px var(--inkt);
+}
+
+.knop.klein {
+  padding: 9px 14px;
+}
+
+.knop:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.25em;
+}
+
+/* Op een donker blok keert de knop om */
+.donker .knop {
+  background: var(--papier);
+  color: var(--inkt);
+}
+
+/* Een sectie waar een link naartoe springt, begint niet strak tegen de bovenrand. */
+[id] {
+  scroll-margin-top: var(--space-6);
+}

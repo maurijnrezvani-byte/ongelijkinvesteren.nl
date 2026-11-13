@@ -1,0 +1,15 @@
+---
+// Knop als link. Bijna recht (radius-sm), in inkt met papier-tekst. De opmaak staat in basis.css (.knop).
+interface Props {
+  href: string;
+  /** 'vol' = gevuld in inkt, 'rand' = omlijnd met papier als vulling (leesbaar over het vlak) */
+  soort?: 'vol' | 'rand';
+  /** kleine knop, zoals Contact en Menu in de kop */
+  klein?: boolean;
+}
+
+const { href, soort = 'vol', klein = false } = Astro.props;
+---
+
+<a class:list={['knop', soort, { klein }]} href={href}><slot /></a>
+

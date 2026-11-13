@@ -1,0 +1,56 @@
+---
+// Sjabloon voor de eenvoudige tekstpagina's (colofon, privacy en elke nieuwe pagina zonder eigen sjabloon).
+// Pagina's met een eigen sjabloon staan als los bestand in deze map (aanbod.astro, methode.astro enz.).
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Basis from '../layouts/Basis.astro';
+import Afsluiter from '../components/Afsluiter.astro';
+import { secties, metPunt } from '../lib/secties';
+
+export async function getStaticPaths() {
+  const paginas = await getCollection('paginas', ({ id }) => !['home', 'aanbod', 'masterclass', 'methode', 'dashboard', 'over', 'contact'].includes(id));
+  return paginas.map((pagina) => ({ params: { naam: pagina.id }, props: { pagina } }));
+}
+
+interface Props {
+  pagina: CollectionEntry<'paginas'>;
+}
+
+const { pagina } = Astro.props;
+const { titel, beschrijving, kop, intro, knop } = pagina.data;
+const { vooraf, lijst } = secties(pagina.rendered?.html);
+---
+
+<Basis titel={titel} beschrijving={beschrijving}>
+  <article class="kader tekstpagina">
+    <header class="pagina-kop">
+      <h1>{metPunt(kop)}</h1>
+      {intro && <p class="intro">{intro}</p>}
+    </header>
+
+    {vooraf && <div class="inhoud" set:html={vooraf} />}
+
+    <div class="rijen">
+      {
+        lijst.map((s) => (
+          <section class="rij" aria-labelledby={s.id}>
+            <h2 id={s.id}>{metPunt(s.kop)}</h2>
+            <div class="inhoud" set:html={s.html} />
+          </section>
+        ))
+      }
+    </div>
+  </article>
+
+  {knop && <Afsluiter tekst="Een halfuur meedenken over de vraag of dit iets voor je gemeente is, kost niets." knop={knop} />}
+</Basis>
+
+<style>
+  .tekstpagina {
+    padding-bottom: var(--sectie);
+  }
+
+  .pagina-kop {
+    padding-block: var(--space-12) var(--sectie);
+  }
+</style>

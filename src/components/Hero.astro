@@ -1,0 +1,182 @@
+---
+// De opening van een pagina: de kop links onderin, het vlak (de kaart van Helmond) rechtsboven.
+// Elke kleurstelling heeft een eigen uitsnede van dezelfde kaart (blad Huisstijl):
+// Rood recht, Blauw groter en gekanteld, Groen een halve slag gedraaid.
+import Vlak from './Vlak.astro';
+import helmond from '../data/helmond.json';
+
+type Matrix = [number, number, number, number, number, number];
+interface Props {
+  kop: string;
+  intro?: string;
+  thema?: 'rood' | 'blauw' | 'groen';
+  /** 'display' voor een korte stelling (hooguit twee regels), 'kop-1' voor een langere kop */
+  maat?: 'display' | 'kop-1';
+  /** 'hoog' = de homepage, 'laag' = de andere pagina's (afgeleid: het blad toont alleen de hoge) */
+  hoogte?: 'hoog' | 'laag';
+  /** het label bij de heetste kern */
+  label?: boolean;
+}
+
+const { kop, intro, thema = 'rood', maat = 'display', hoogte = 'laag', label = true } = Astro.props;
+
+const BREED: Record<string, Matrix> = {
+  rood: [1.15, 0, 0, 1.15, 270, -68.2],
+  blauw: [1.3166, 0.5319, -0.5319, 1.3166, 370.7, -387.9],
+  groen: [-1.25, 0, 0, -1.25, 1738.2, 608.9],
+};
+const SMAL: Record<string, Matrix> = {
+  rood: [0.62, 0, 0, 0.62, -61.2, 12],
+  blauw: [0.7417, 0.2997, -0.2997, 0.7417, -56.1, -172.6],
+  groen: [-0.68, 0, 0, -0.68, 706.2, 380.2],
+};
+const kant = thema === 'rood' ? 'auto' : 'links';
+
+// Telefoon, lage hero (afgeleid): dezelfde uitsnede, iets kleiner, met de heetste kern rechtsboven
+// op een vaste plek. Zo vallen de kop en de zin eronder niet over de donkere kern.
+function verplaats(m: Matrix, schaal: number, naar: [number, number]): Matrix {
+  const [a, b, c, d] = m.map((v) => +(v * schaal).toFixed(4));
+  const { x, y } = helmond.kern;
+  return [a, b, c, d, +(naar[0] - (a * x + c * y)).toFixed(1), +(naar[1] - (b * x + d * y)).toFixed(1)];
+}
+const smal = hoogte === 'laag' ? verplaats(SMAL[thema], 0.8, [306, 118]) : SMAL[thema];
+---
+
+<section class:list={['hero', hoogte, `t-${thema}`]} aria-labelledby="hero-kop">
+  <Vlak kader={[1240, 720]} matrix={BREED[thema]} vaag={40} haar={1} label={label ? kant : undefined} klasse="breed" />
+  <Vlak kader={[390, 780]} matrix={smal} vaag={24} haar={0.6} label={label ? 'links' : undefined} klasse="smal" />
+  <div class="kader kopblok">
+    <h1 id="hero-kop" class={maat}>{kop}</h1>
+    {intro && <p class="intro">{intro}</p>}
+    <slot />
+    <p class="klein uitleg">Dit vlak is {helmond.gemeente.n}. Hoe donkerder, hoe meer achterstanden zich stapelen in een buurt.</p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--papier);
+    display: flex;
+    flex-direction: column;
+    min-height: 600px;
+  }
+
+  .hero.hoog {
+    min-height: clamp(620px, 100svh - 28px, 820px);
+  }
+
+  .hero :global(.breed) {
+    display: none;
+  }
+
+  /* De korrel loopt onderaan uit, zodat de hero zonder naad overgaat in de pagina (afgeleid). */
+  .hero :global(.korrel) {
+    -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent);
+    mask-image: linear-gradient(to bottom, #000 78%, transparent);
+  }
+
+  .kopblok {
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+    padding-top: 120px;
+    padding-bottom: var(--space-6);
+  }
+
+  h1.display {
+    max-width: 6.6em;
+  }
+
+  h1.kop-1 {
+    max-width: 10em;
+    text-wrap: balance;
+  }
+
+  .intro {
+    margin: var(--space-4) 0 18px;
+  }
+
+  .uitleg {
+    margin-top: var(--space-4);
+    max-width: 30em;
+  }
+
+  @media (min-width: 40rem) {
+    .hero {
+      min-height: clamp(460px, min(44vw, 100svh - 28px), 560px);
+    }
+
+    .hero.hoog {
+      min-height: clamp(560px, min(58vw, 100svh - 28px), 780px);
+    }
+
+    .hero :global(.breed) {
+      display: block;
+    }
+
+    .hero :global(.smal) {
+      display: none;
+    }
+
+    .hero :global(.vlak),
+    .hero :global(.vlak-label) {
+      width: min(100%, 1720px);
+    }
+
+    /* Het vlak schuift op smallere schermen naar rechts (afgeleid). De kaart schaalt mee met het scherm,
+       het menu en het label niet: zonder deze verschuiving vallen menu en kop over de donkere kern.
+       Gemeten met wat er werkelijk achter de tekst staat: koppen minstens 3:1, kleine tekst minstens 4,5:1. */
+    .hero :global(.vlak.breed),
+    .hero :global(.vlak-label.breed) {
+      translate: var(--schuif, 0px) 0;
+    }
+
+    .hero.t-rood {
+      --schuif: 12vw;
+    }
+
+    /* De regel onderaan staat op papier, niet over het vlak: het vlak loopt onderaan uit in het papier. */
+    .hero.laag::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      z-index: 1;
+      height: 150px;
+      background: linear-gradient(to bottom, transparent, var(--papier) 55%);
+      pointer-events: none;
+    }
+
+    .kopblok {
+      padding-bottom: 40px;
+    }
+
+    .intro {
+      margin: 26px 0 var(--space-6);
+    }
+
+    .uitleg {
+      margin-top: 26px;
+      max-width: none;
+    }
+  }
+
+  /* Tabletbreedte: geen menu naast het woordmerk, en het label past niet naast de kop. */
+  @media (min-width: 40rem) and (max-width: 61.99rem) {
+    .hero :global(.vlak-label.breed) {
+      display: none;
+    }
+  }
+
+  /* Breed scherm met het menu naast het woordmerk: hoe smaller, hoe verder het vlak naar rechts. */
+  @media (min-width: 62rem) {
+    .hero.t-rood {
+      --schuif: clamp(0px, 830px - 63vw, 21vw);
+    }
+
+    .hero.t-groen {
+      --schuif: clamp(0px, 830px - 63vw, 16.5vw);
+    }
+  }
+</style>
