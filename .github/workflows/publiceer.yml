@@ -1,0 +1,40 @@
+# Publiceert de site naar GitHub Pages, volgens de officiële Astro-handleiding:
+# https://docs.astro.build/en/guides/deploy/github/
+# Werkt pas als in GitHub bij Settings > Pages de bron op "GitHub Actions" staat.
+name: Publiceer naar GitHub Pages
+
+on:
+  # Draait bij elke push naar main
+  push:
+    branches: [ main ]
+  # Handmatig starten vanuit het tabblad Actions
+  workflow_dispatch:
+
+# Rechten om de repository te lezen en een Pages-publicatie te maken
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository ophalen
+        uses: actions/checkout@v7
+      - name: Installeren, bouwen en uploaden
+        uses: withastro/action@v6
+        # with:
+          # path: .           # map van het Astro-project (optioneel)
+          # node-version: 24  # standaard 24 (optioneel)
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publiceren op GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
